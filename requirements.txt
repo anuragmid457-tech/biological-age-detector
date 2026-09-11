@@ -1,0 +1,28 @@
+# Flask web server
+Flask==3.0.3
+Werkzeug==3.0.3
+python-dotenv==1.0.1
+gunicorn==22.0.0
+
+# Data handling / ML
+numpy==1.26.4
+pandas==2.2.2
+scikit-learn==1.5.1
+joblib==1.4.2
+
+# LangChain + LangGraph ecosystem
+langchain==0.2.16
+langchain-core==0.2.38
+langchain-community==0.2.16
+langchain-mistralai==0.1.13
+langgraph==0.2.14
+
+# Document parsing (PDF, PPT, DOCX)
+pypdf==4.3.1
+python-docx==1.1.2
+python-pptx==0.6.23
+unstructured==0.15.9
+
+# Optional: vector store for RAG (if you're doing retrieval over uploaded docs)
+chromadb==0.5.5
+tiktoken==0.7.0
