@@ -4,32 +4,85 @@
  * The one deliberate flourish: expert corrections are shown the way a clinician
  * amends a chart, the model's value struck through and the new one in red ink.
  */
-.chr {
-  --chr-ink: #1d2a2c;
-  --chr-muted: #5b6a6c;
-  --chr-rule: #d3dad8;
-  --chr-surface: #ffffff;
-  --chr-paper: #f3f6f5;
-  --chr-accent: #245f6e;
-  --chr-pen: #b0263e;
-  --chr-warn: #8a5600;
+:root {
+  /* Page colours, shared with your own pages if they use these variables */
+  --chr-bg: #0b1520;          /* bluish dark page background */
+  --chr-ink: #e2ece8;
+  --chr-muted: #8ea5a5;
+  --chr-rule: #22384a;
+  --chr-surface: #12202d;     /* cards and inputs */
+  --chr-paper: #0f1b27;       /* inset panels */
+  --chr-accent: #34c77b;      /* green: buttons, links, focus */
+  --chr-accent-strong: #5ee09a;
+  --chr-on-accent: #04140b;   /* text on green buttons */
+  --chr-pen: #ff6b7d;         /* expert corrections, kept red so they stand out */
+  --chr-warn: #f0b45a;
   --chr-radius: 6px;
+  color-scheme: dark;         /* dark native controls: number arrows, dropdowns */
+  accent-color: var(--chr-accent);
+}
+
+.chr {
   color: var(--chr-ink);
   line-height: 1.5;
 }
 
-@media (prefers-color-scheme: dark) {
-  .chr {
-    --chr-ink: #e4ecea;
-    --chr-muted: #9db0ad;
-    --chr-rule: #34484a;
-    --chr-surface: #182325;
-    --chr-paper: #111a1b;
-    --chr-accent: #7cc2d0;
-    --chr-pen: #ff7d8f;
-    --chr-warn: #f2b45a;
-  }
+/* ---------------------------------------------------------- scrollbars */
+
+/* Edge and Chrome: themed track, thumb and arrow buttons. */
+::-webkit-scrollbar { width: 14px; height: 14px; }
+::-webkit-scrollbar-track { background: var(--chr-paper); }
+::-webkit-scrollbar-corner { background: var(--chr-paper); }
+::-webkit-scrollbar-thumb {
+  background: #1f6b46;
+  border: 3px solid var(--chr-paper);
+  border-radius: 7px;
 }
+::-webkit-scrollbar-thumb:hover { background: var(--chr-accent); }
+::-webkit-scrollbar-thumb:active { background: var(--chr-accent-strong); }
+
+::-webkit-scrollbar-button:single-button {
+  display: block;
+  width: 14px;
+  height: 14px;
+  background-color: var(--chr-paper);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 8px;
+}
+::-webkit-scrollbar-button:single-button:hover { background-color: var(--chr-surface); }
+::-webkit-scrollbar-button:single-button:vertical:decrement {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3E%3Cpath d='M4 1.5 7.5 6.5h-7z' fill='%2334c77b'/%3E%3C/svg%3E");
+}
+::-webkit-scrollbar-button:single-button:vertical:increment {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3E%3Cpath d='M4 6.5 .5 1.5h7z' fill='%2334c77b'/%3E%3C/svg%3E");
+}
+::-webkit-scrollbar-button:single-button:horizontal:decrement {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3E%3Cpath d='M1.5 4 6.5 .5v7z' fill='%2334c77b'/%3E%3C/svg%3E");
+}
+::-webkit-scrollbar-button:single-button:horizontal:increment {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3E%3Cpath d='M6.5 4 1.5 .5v7z' fill='%2334c77b'/%3E%3C/svg%3E");
+}
+
+/* Firefox has no arrow buttons to style, only these two colours. Kept out of
+   Edge and Chrome, where setting them would switch off the rules above. */
+@supports not selector(::-webkit-scrollbar) {
+  * { scrollbar-color: #1f6b46 var(--chr-paper); }
+}
+
+/* Number boxes in Edge and Chrome: green up/down arrows. The top half of the
+   area still steps up and the bottom half steps down, as before. */
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 100%;
+  margin-left: 6px;
+  cursor: pointer;
+  opacity: 0.8;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 16'%3E%3Cpath d='M5 2 9 7H1zM5 14 1 9h8z' fill='%2334c77b'/%3E%3C/svg%3E") no-repeat center / 9px 15px;
+}
+input[type="number"]::-webkit-inner-spin-button:hover { opacity: 1; }
 
 .chr *, .chr *::before, .chr *::after { box-sizing: border-box; }
 .chr [hidden] { display: none !important; }
@@ -99,11 +152,14 @@
   border-radius: var(--chr-radius);
   border: 1px solid var(--chr-accent);
   background: var(--chr-accent);
-  color: var(--chr-surface);
+  color: var(--chr-on-accent);
   cursor: pointer;
 }
+.chr-btn:hover { background: var(--chr-accent-strong); border-color: var(--chr-accent-strong); }
+.chr-btn-quiet:hover { background: rgba(52, 199, 123, 0.12); }
 .chr-btn:disabled { opacity: 0.6; cursor: progress; }
 .chr-btn-quiet { background: transparent; color: var(--chr-accent); }
+.chr-btn-quiet:hover { color: var(--chr-accent-strong); }
 .chr-link {
   font: inherit;
   background: none;
