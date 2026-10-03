@@ -278,7 +278,7 @@ footer{margin-top:40px;padding-top:18px;border-top:1px solid var(--line);color:v
       <div class="mode-body" id="paneR" role="tabpanel" aria-labelledby="modeR" hidden>
         <div class="field pdf-age">
           <label for="pdfAge">Your age <span class="unit">years</span></label>
-          <input id="pdfAge" type="number" step="any" min="1" max="120" placeholder="optional">
+          <input id="pdfAge" type="number" step="any" min="1" max="120" placeholder="optional" data-start="30">
           <small>Lets the reading compare your body's age with your real age.</small>
         </div>
         <div class="drop" id="drop" tabindex="0" role="button" aria-label="Choose a PDF file">
@@ -429,6 +429,10 @@ function fieldEl(f) {
       f.options.map(o => h("option", { value: o }, o)));
   } else if (f.type === "number") {
     control = h("input", { id, name: f.key, type: "number", step: "any", inputmode: "decimal" });
+    // For the green up/down arrows: where they start and how far one click moves.
+    if (f.start != null) control.dataset.start = f.start;
+    if (f.step != null) control.dataset.step = f.step;
+    control.dataset.floor = "0";
   } else {
     control = h("input", { id, name: f.key, type: "text", maxlength: 500, autocomplete: "off" });
   }
@@ -457,6 +461,7 @@ function buildForm() {
       s.intro ? h("p", { class: "section-intro" }, s.intro) : null,
       h("div", { class: "fields" }, s.fields.map(fieldEl))));
   });
+  if (window.Chronos) Chronos.addSteppers(box);
   box.addEventListener("input", refresh);
   box.addEventListener("change", refresh);
   showSection(0);
@@ -529,6 +534,7 @@ async function loadQuestions() {
 loadQuestions();
 
 /* ---------------- PDF */
+if (window.Chronos) Chronos.addSteppers($("paneR"));
 const drop = $("drop"), fileInput = $("file");
 drop.onclick = () => fileInput.click();
 drop.onkeydown = e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); fileInput.click(); } };

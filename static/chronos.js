@@ -75,6 +75,58 @@
     return String(text || "").split(/\n\s*\n/).filter(Boolean).map((p) => h("p", {}, p.trim()));
   }
 
+  // ------------------------------------------------------------ green number arrows
+
+  const ARROW_UP = '<svg viewBox="0 0 10 10" aria-hidden="true"><path d="M5 2 9.5 7.5H.5z" fill="currentColor"/></svg>';
+  const ARROW_DOWN = '<svg viewBox="0 0 10 10" aria-hidden="true"><path d="M5 8 .5 2.5h9z" fill="currentColor"/></svg>';
+
+  /**
+   * Give every number box inside root a pair of green up/down buttons.
+   * Optional data attributes on the input: data-step (default 1), data-start (value used
+   * when the box is empty), data-floor (lowest value the arrows go to).
+   * Safe to call repeatedly; boxes that already have arrows are skipped.
+   */
+  function addSteppers(root) {
+    (root || document).querySelectorAll('input[type="number"]:not([data-stepper])').forEach((input) => {
+      input.dataset.stepper = "1";
+      const wrap = h("div", { class: "chr-num" });
+      input.parentNode.insertBefore(wrap, input);
+      wrap.append(input);
+
+      const nudge = (dir) => {
+        const step = Number(input.dataset.step) || 1;
+        const raw = input.value.trim();
+        let next;
+        if (raw === "" || isNaN(Number(raw))) {
+          next = input.dataset.start != null ? Number(input.dataset.start)
+            : input.min !== "" ? Number(input.min) : 0;
+        } else {
+          next = Number(raw) + dir * step;
+        }
+        const floor = input.dataset.floor != null ? Number(input.dataset.floor)
+          : input.min !== "" ? Number(input.min) : -Infinity;
+        const ceil = input.max !== "" ? Number(input.max) : Infinity;
+        next = Math.min(ceil, Math.max(floor, next));
+        const decimals = Math.max(
+          (String(step).split(".")[1] || "").length,
+          (raw.split(".")[1] || "").length);
+        input.value = String(Number(next.toFixed(Math.min(decimals, 4))));
+        input.dispatchEvent(new Event("input", { bubbles: true }));
+        input.dispatchEvent(new Event("change", { bubbles: true }));
+      };
+
+      const up = h("button", { type: "button", tabindex: "-1", "aria-label": "Increase", title: "Increase" });
+      const down = h("button", { type: "button", tabindex: "-1", "aria-label": "Decrease", title: "Decrease" });
+      up.innerHTML = ARROW_UP;
+      down.innerHTML = ARROW_DOWN;
+      up.addEventListener("click", () => nudge(1));
+      down.addEventListener("click", () => nudge(-1));
+      // Keep focus in the box so typing carries on naturally after a click.
+      [up, down].forEach((b) => b.addEventListener("mousedown", (e) => e.preventDefault()));
+      wrap.append(h("div", { class: "chr-num-btns" }, up, down));
+    });
+  }
+
   // ------------------------------------------------------------ questionnaire
 
   function renderField(field) {
@@ -145,6 +197,7 @@
         h("div", { class: "chr-grid" }, section.fields.map(renderField))));
     });
 
+    addSteppers(container);
     const refresh = () => refreshQuestionnaire(container);
     container.addEventListener("input", refresh);
     container.addEventListener("change", refresh);
@@ -327,6 +380,10 @@
 
     updateSum();
     container.append(openBtn, form);
+    form.querySelectorAll('input[type="number"]').forEach((i) => {
+      i.dataset.step = /life_expectancy|health_score/.test(i.id) ? "1" : "0.5";
+    });
+    addSteppers(form);
   }
 
   // ------------------------------------------------------------ expert page
@@ -478,5 +535,5 @@
     getCode() ? showList() : showGate();
   }
 
-  window.Chronos = { renderQuestionnaire, collectAnswers, mountCorrection, mountExpertPage };
+  window.Chronos = { renderQuestionnaire, collectAnswers, mountCorrection, mountExpertPage, addSteppers };
 })();

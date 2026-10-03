@@ -70,19 +70,39 @@
   * { scrollbar-color: #3dff8a var(--chr-paper); }
 }
 
-/* Number boxes in Edge and Chrome: green up/down arrows. The top half of the
-   area still steps up and the bottom half steps down, as before. */
-input[type="number"]::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 14px;
-  height: 100%;
-  margin-left: 6px;
-  cursor: pointer;
-  opacity: 0.8;
-  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 16'%3E%3Cpath d='M5 2 9 7H1zM5 14 1 9h8z' fill='%233dff8a'/%3E%3C/svg%3E") no-repeat center / 9px 15px;
+/* Number boxes: the browser's own arrows can't be recoloured reliably, so they are
+   hidden and replaced by green up/down buttons (added by Chronos.addSteppers). */
+input[type="number"] { -moz-appearance: textfield; appearance: textfield; }
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+
+.chr-num { position: relative; display: block; }
+.chr-num > input { width: 100%; padding-right: 36px !important; }
+.chr-num-btns {
+  position: absolute;
+  top: 1px; right: 1px; bottom: 1px;
+  width: 28px;
+  display: flex;
+  flex-direction: column;
+  border-left: 1px solid var(--chr-rule);
+  border-radius: 0 5px 5px 0;
+  overflow: hidden;
 }
-input[type="number"]::-webkit-inner-spin-button:hover { opacity: 1; }
+.chr-num-btns button {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--chr-accent);
+  cursor: pointer;
+}
+.chr-num-btns button + button { border-top: 1px solid var(--chr-rule); }
+.chr-num-btns button:hover { background: rgba(61, 255, 138, 0.14); color: var(--chr-accent-strong); }
+.chr-num-btns button:active { background: rgba(61, 255, 138, 0.28); }
+.chr-num-btns svg { width: 9px; height: 9px; display: block; }
 
 .chr *, .chr *::before, .chr *::after { box-sizing: border-box; }
 .chr [hidden] { display: none !important; }

@@ -5,3 +5,7 @@ pip install -r requirements.txt
 
 
 Supabase password = ANURAG_THE_VILLAIN
+
+git add .
+git commit -m "Labelled example, empty start, ethnicity options, green arrows"
+git push
