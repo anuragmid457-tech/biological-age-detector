@@ -6,6 +6,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500&display=swap" rel="stylesheet">
+<!-- Shared theme: green scrollbars with green arrow buttons, green number-box arrows -->
+<link rel="stylesheet" href="{{ url_for('static', filename='chronos.css') }}">
 <style>
 :root{
   --void:#070B12;
@@ -14,8 +16,8 @@
   --line:#1E2C3F;
   --ink:#DCE6F2;
   --ink-dim:#7A8CA3;
-  --signal:#4CE0D2;
-  --signal-2:#7A6CF0;
+  --signal:#3DFF8A;
+  --signal-2:#00C96B;
   --good:#3FD98A;
   --bad:#F2555A;
   --warn:#F2A65A;
@@ -23,7 +25,6 @@
 }
 *{box-sizing:border-box}
 html,body{margin:0;padding:0}
-html{scroll-behavior:smooth}
 body{
   background:var(--void);color:var(--ink);
   font-family:"IBM Plex Sans",system-ui,sans-serif;line-height:1.6;
@@ -36,25 +37,16 @@ body::before{
   background-size:64px 64px;opacity:.22;
   mask-image:radial-gradient(ellipse 80% 60% at 50% 0%,#000 20%,transparent 78%);
 }
-.wrap{position:relative;z-index:1;max-width:1400px;margin:0 auto;padding:0 32px 60px}
-[hidden]{display:none!important}
+.wrap{position:relative;z-index:1;max-width:1400px;margin:0 auto;padding:0 32px 80px}
 
-.masthead{
-  display:flex;align-items:center;justify-content:space-between;gap:16px;padding:22px 0;
-  border-bottom:1px solid var(--line);
-  position:sticky;top:0;z-index:5;
-  background:rgba(7,11,18,.88);backdrop-filter:blur(8px);
-}
+.masthead{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:22px 0;border-bottom:1px solid var(--line)}
 .mark{display:flex;align-items:center;gap:12px;font-family:"Space Grotesk",sans-serif;font-weight:700;letter-spacing:-.02em;font-size:18px}
 .status{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--ink-dim);display:flex;align-items:center;gap:8px}
 .dot{width:7px;height:7px;border-radius:50%;background:var(--signal);box-shadow:0 0 10px var(--signal)}
 
-.intro{padding:48px 0 36px;max-width:760px}
+.intro{padding:56px 0 44px;max-width:760px}
 .intro h1{font-family:"Space Grotesk",sans-serif;font-weight:700;font-size:52px;line-height:1.04;letter-spacing:-.035em;margin:0 0 18px}
 .intro p{max-width:60ch;color:var(--ink-dim);font-size:17px;margin:0 0 26px}
-.intro.small{padding:28px 0 24px}
-.intro.small h1{font-size:32px;margin:0 0 10px}
-.intro.small p{font-size:15px;margin:0 0 18px}
 .jump{display:flex;gap:12px}
 .btn{
   font-family:"Space Grotesk",sans-serif;font-size:14px;font-weight:500;
@@ -63,21 +55,18 @@ body::before{
   transition:border-color .15s,background .15s,color .15s;
 }
 .btn:hover{border-color:var(--signal);color:var(--signal)}
-.btn.solid{background:var(--signal);border-color:var(--signal);color:#06121A;font-weight:700}
-.btn.solid:hover{background:#6BEDE1;color:#06121A}
+.btn.solid{background:var(--signal);border-color:var(--signal);color:#04140B;font-weight:700}
+.btn.solid:hover{background:#8BFFBC;color:#04140B}
 .btn:disabled{opacity:.45;cursor:not-allowed}
-.btn:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,.drop:focus-visible,.steps button:focus-visible{outline:2px solid var(--signal);outline-offset:3px}
+.btn:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,.drop:focus-visible{outline:2px solid var(--signal);outline-offset:3px}
 
 .stage{display:grid;grid-template-columns:1fr 460px;gap:28px;align-items:start}
-.inputs{display:grid;grid-template-columns:1fr;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--r)}
+.inputs{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--r)}
 .pane{background:var(--panel);padding:30px;transition:box-shadow .3s,background .3s}
 .pane h2{font-family:"Space Grotesk",sans-serif;font-size:20px;font-weight:700;letter-spacing:-.02em;margin:0 0 6px;transition:color .3s}
 .pane .sub{color:var(--ink-dim);font-size:14px;margin:0 0 22px}
-.pane.lit{background:#0F1B27;box-shadow:inset 0 0 0 1px var(--signal),0 0 34px -8px rgba(76,224,210,.4)}
+.pane.lit{background:#0F1B27;box-shadow:inset 0 0 0 1px var(--signal),0 0 34px -8px rgba(61,255,138,.4)}
 .pane.lit h2{color:var(--signal)}
-
-.pane-head{display:flex;align-items:flex-start;justify-content:space-between;gap:20px}
-.pane-head .btn{flex:none;padding:8px 14px;font-size:13px}
 
 .drop{border:1px dashed #2A3B52;border-radius:var(--r);padding:34px 20px;text-align:center;cursor:pointer;transition:border-color .15s,background .15s;background:var(--panel-2)}
 .drop:hover,.drop.over{border-color:var(--signal);background:#0F1C28}
@@ -90,41 +79,21 @@ body::before{
 .field label{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--ink-dim);letter-spacing:.05em}
 input,select,textarea{background:var(--panel-2);border:1px solid var(--line);border-radius:var(--r);color:var(--ink);padding:9px 11px;font-family:"IBM Plex Mono",monospace;font-size:13px;width:100%}
 input::placeholder,textarea::placeholder{color:#4A5A70}
-input:hover,select:hover{border-color:#2C4260}
+input:hover,select:hover{border-color:rgba(61,255,138,.4)}
 .span2{grid-column:1/-1}
 .pane .btn.solid{margin-top:20px;width:100%;padding:12px}
-.pdf-age{margin-bottom:18px;max-width:300px}
+.pdf-age{margin-bottom:18px}
 
-.steps{display:flex;flex-wrap:wrap;gap:6px;margin:16px 0 22px;padding-bottom:18px;border-bottom:1px solid var(--line)}
-.steps button{
-  font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.05em;
-  color:var(--ink-dim);background:transparent;border:1px solid var(--line);
-  border-radius:var(--r);padding:6px 11px;cursor:pointer;
-  transition:color .15s,border-color .15s;
-}
-.steps button:hover{color:var(--ink);border-color:#2C4260}
-.steps button.filled{color:var(--ink)}
-.steps button.on{color:var(--signal);border-color:var(--signal)}
-.stepwrap{min-height:322px}
-.stepbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:22px;padding-top:16px;border-top:1px solid var(--line)}
-.stepbar .btn{padding:9px 16px;font-size:13px}
-.stepcount{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--ink-dim);letter-spacing:.05em}
-
-.side{
-  display:flex;flex-direction:column;gap:28px;
-  position:fixed;top:96px;
-  width:460px;right:max(32px,calc((100% - 1400px) / 2 + 32px));
-  max-height:calc(100vh - 120px);overflow-y:auto;
-}
-.card{border:1px solid var(--line);border-radius:var(--r);background:var(--panel);overflow:hidden;flex:none}
+.side{display:flex;flex-direction:column;gap:28px;position:sticky;top:24px}
+.card{border:1px solid var(--line);border-radius:var(--r);background:var(--panel);overflow:hidden}
 .card-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 20px;border-bottom:1px solid var(--line);background:var(--panel-2);font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--ink-dim)}
 
-.dial-box{padding:22px 20px 18px}
-.dial{position:relative;width:196px;margin:0 auto}
+.dial-box{padding:26px 20px 22px}
+.dial{position:relative;width:220px;margin:0 auto}
 .dial svg{width:100%;display:block;overflow:visible}
 .dial-core{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
 .dial-num{
-  font-family:"Space Grotesk",sans-serif;font-weight:700;font-size:52px;line-height:1;
+  font-family:"Space Grotesk",sans-serif;font-weight:700;font-size:56px;line-height:1;
   letter-spacing:-.05em;font-variant-numeric:tabular-nums;
   transition:color .5s,text-shadow .5s;
 }
@@ -143,16 +112,16 @@ input:hover,select:hover{border-color:#2C4260}
 .dial.mid  .dial-num{color:var(--warn);text-shadow:0 0 26px rgba(242,166,90,.5)}
 .dial.mid  .tick.hot{stroke:var(--warn)}
 
-@media (prefers-reduced-motion:reduce){.sweep{animation:none}*{transition:none!important}html{scroll-behavior:auto}}
+@media (prefers-reduced-motion:reduce){.sweep{animation:none}*{transition:none!important}}
 
-.report-body{padding:20px;border-top:1px solid var(--line);max-height:206px;overflow-y:auto}
+.report-body{padding:20px;border-top:1px solid var(--line);max-height:290px;overflow-y:auto}
 .empty{color:var(--ink-dim);font-size:14px;margin:0}
 .report{white-space:pre-wrap;font-size:13.5px;line-height:1.7}
 .err{color:var(--warn);font-family:"IBM Plex Mono",monospace;font-size:12.5px;line-height:1.6;margin:0;white-space:pre-wrap;word-break:break-word}
 
-.log{height:184px;overflow-y:auto;padding:18px 20px;display:flex;flex-direction:column;gap:14px}
+.log{height:280px;overflow-y:auto;padding:18px 20px;display:flex;flex-direction:column;gap:14px}
 .msg{max-width:88%;font-size:14px;line-height:1.65;padding:10px 13px;border-radius:var(--r);white-space:pre-wrap;word-break:break-word}
-.msg.you{align-self:flex-end;background:#16283A;border:1px solid #23415C}
+.msg.you{align-self:flex-end;background:#0E2A1C;border:1px solid #1F5C3B}
 .msg.bot{align-self:flex-start;background:var(--panel-2);border:1px solid var(--line)}
 .msg.sys{align-self:flex-start;color:var(--ink-dim);font-size:13px;background:none;border:none;padding:0;max-width:100%}
 .composer{display:flex;gap:9px;padding:14px 20px;border-top:1px solid var(--line);background:var(--panel-2)}
@@ -165,7 +134,7 @@ input:hover,select:hover{border-color:#2C4260}
 .bars i:nth-child(4){animation-delay:.39s}.bars i:nth-child(5){animation-delay:.52s}
 @keyframes pulse{0%,100%{height:4px;opacity:.35}50%{height:18px;opacity:1}}
 
-footer{margin-top:36px;padding-top:20px;border-top:1px solid var(--line);color:var(--ink-dim);font-size:13px}
+footer{margin-top:44px;padding-top:20px;border-top:1px solid var(--line);color:var(--ink-dim);font-size:13px}
 </style>
 </head>
 <body>
@@ -174,37 +143,31 @@ footer{margin-top:36px;padding-top:20px;border-top:1px solid var(--line);color:v
   <header class="masthead">
     <div class="mark">
       <svg width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true">
-        <circle cx="11" cy="11" r="9.5" stroke="#4CE0D2" stroke-width="1.4"/>
-        <circle cx="11" cy="11" r="2" fill="#7A6CF0"/>
-        <path d="M11 11 L11 3.5" stroke="#4CE0D2" stroke-width="1.4"/>
-        <path d="M11 11 L16.5 14.5" stroke="#7A6CF0" stroke-width="1.4"/>
+        <circle cx="11" cy="11" r="9.5" stroke="#3DFF8A" stroke-width="1.4"/>
+        <circle cx="11" cy="11" r="2" fill="#00C96B"/>
+        <path d="M11 11 L11 3.5" stroke="#3DFF8A" stroke-width="1.4"/>
+        <path d="M11 11 L16.5 14.5" stroke="#00C96B" stroke-width="1.4"/>
       </svg>
       Chronos
     </div>
     <div class="status"><span class="dot"></span><span id="status">model idle</span></div>
   </header>
 
-  <section class="intro" id="intro">
+  <section class="intro">
     <h1>Your body keeps a different clock than your birthday.</h1>
-    <p>Chronos reads your biomarkers, lifestyle signals and vitals, then estimates the age your body is actually running at. Pick how you want to start.</p>
+    <p>Upload a lab report or type your numbers in. Chronos reads the biomarkers, lifestyle signals and vitals, then estimates the age your body is actually running at.</p>
     <div class="jump">
-      <button class="btn solid" id="jumpPdf">Send a report</button>
+      <button class="btn solid" id="jumpPdf">Send report</button>
       <button class="btn" id="jumpManual">Enter values</button>
     </div>
   </section>
 
-  <div class="stage" id="stage" hidden>
+  <div class="stage">
 
     <div class="inputs">
-
-      <div class="pane" id="paneReport" hidden>
-        <div class="pane-head">
-          <div>
-            <h2>Send a lab report</h2>
-            <p class="sub">A PDF of blood work, a check-up summary or a health record.</p>
-          </div>
-          <button class="btn" id="toManual">Enter values instead</button>
-        </div>
+      <div class="pane" id="paneReport">
+        <h2>Send a lab report</h2>
+        <p class="sub">A PDF of blood work, a check-up summary or a health record.</p>
 
         <div class="field pdf-age">
           <label for="pdfAge">your age — optional, for the comparison</label>
@@ -212,7 +175,7 @@ footer{margin-top:36px;padding-top:20px;border-top:1px solid var(--line);color:v
         </div>
 
         <div class="drop" id="drop" tabindex="0" role="button" aria-label="Choose a PDF file">
-          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#4CE0D2" stroke-width="1.4" aria-hidden="true">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#3DFF8A" stroke-width="1.4" aria-hidden="true">
             <path d="M12 16V4m0 0L7 9m5-5 5 5"/><path d="M4 17v2a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-2"/>
           </svg>
           <b>Drop a PDF here</b>
@@ -223,114 +186,23 @@ footer{margin-top:36px;padding-top:20px;border-top:1px solid var(--line);color:v
         <button class="btn solid" id="runPdf">Analyze report</button>
       </div>
 
-      <div class="pane" id="paneManual" hidden>
-        <div class="pane-head">
-          <div>
-            <h2>Enter values</h2>
-            <p class="sub">Six short sections. Fill in what you know and leave the rest blank.</p>
-          </div>
-          <button class="btn" id="toPdf">Send a report instead</button>
+      <div class="pane" id="paneManual">
+        <h2>Enter values</h2>
+        <p class="sub">Fill in what you know and leave the rest blank.</p>
+        <div class="grid2">
+          <div class="field"><label for="age">age</label><input id="age" type="number" min="1" max="120" placeholder="34"></div>
+          <div class="field"><label for="rhr">resting heart rate</label><input id="rhr" placeholder="68 bpm"></div>
+          <div class="field"><label for="bp">blood pressure</label><input id="bp" placeholder="120/80 mmHg"></div>
+          <div class="field"><label for="sugar">fasting blood sugar</label><input id="sugar" placeholder="95 mg/dL"></div>
+          <div class="field"><label for="chol">total cholesterol</label><input id="chol" placeholder="180 mg/dL"></div>
+          <div class="field"><label for="sleep">average sleep</label><input id="sleep" placeholder="6.5 hours"></div>
+          <div class="field"><label for="exercise">exercise</label>
+            <select id="exercise"><option value="">not specified</option><option>none</option><option>1x/week</option><option>3x/week</option><option>5x/week</option><option>daily</option></select></div>
+          <div class="field"><label for="smoking">smoking</label>
+            <select id="smoking"><option value="">not specified</option><option>no</option><option>former</option><option>yes</option></select></div>
+          <div class="field span2"><label for="alcohol">alcohol</label>
+            <select id="alcohol"><option value="">not specified</option><option>none</option><option>occasional</option><option>weekly</option><option>daily</option></select></div>
         </div>
-
-        <nav class="steps" id="steps" aria-label="Questionnaire sections"></nav>
-
-        <div class="stepwrap">
-
-          <div class="step grid2" data-title="Personal">
-            <div class="field"><label for="age">age</label><input id="age" type="number" min="1" max="120" placeholder="34"></div>
-            <div class="field"><label for="gender">gender</label>
-              <select id="gender"><option value="">not specified</option><option>female</option><option>male</option><option>other</option></select></div>
-            <div class="field"><label for="race">race or ethnicity</label>
-              <select id="race"><option value="">not specified</option><option>White</option><option>Black</option><option>South Asian</option><option>East Asian</option><option>Hispanic or Latino</option><option>Middle Eastern</option><option>Mixed or other</option></select></div>
-            <div class="field"><label for="longevity">family longevity</label>
-              <select id="longevity"><option value="">not specified</option><option>most relatives lived past 85</option><option>most lived to 75-85</option><option>most lived to 65-75</option><option>several died before 65</option><option>unknown</option></select></div>
-            <div class="field"><label for="education">education</label>
-              <select id="education"><option value="">not specified</option><option>less than high school</option><option>high school</option><option>some college</option><option>bachelor's degree</option><option>postgraduate degree</option></select></div>
-            <div class="field"><label for="sleep">average sleep</label><input id="sleep" placeholder="6.5 hours"></div>
-          </div>
-
-          <div class="step grid2" data-title="Heart" hidden>
-            <div class="field"><label for="chol">total cholesterol</label><input id="chol" placeholder="180 mg/dL"></div>
-            <div class="field"><label for="bp">blood pressure</label><input id="bp" placeholder="120/80 mmHg"></div>
-            <div class="field"><label for="rhr">resting heart rate</label><input id="rhr" placeholder="68 bpm"></div>
-            <div class="field"><label for="whr">waist to hip ratio</label><input id="whr" placeholder="0.85"></div>
-            <div class="field"><label for="smoking">smoking</label>
-              <select id="smoking"><option value="">not specified</option><option>no</option><option>former</option><option>yes</option></select></div>
-            <div class="field"><label for="heartFamily">family heart history</label>
-              <select id="heartFamily"><option value="">not specified</option><option>none</option><option>one relative after 60</option><option>one relative before 60</option><option>two or more before 60</option></select></div>
-            <div class="field"><label for="stress">stress</label>
-              <select id="stress"><option value="">not specified</option><option>low</option><option>moderate</option><option>high</option><option>very high</option></select></div>
-            <div class="field"><label for="exercise">physical activity</label>
-              <select id="exercise"><option value="">not specified</option><option>none</option><option>1x/week</option><option>3x/week</option><option>5x/week</option><option>daily</option></select></div>
-          </div>
-
-          <div class="step grid2" data-title="Medical" hidden>
-            <div class="field"><label for="checkups">check-up habits</label>
-              <select id="checkups"><option value="">not specified</option><option>yearly</option><option>every few years</option><option>only when unwell</option><option>never</option></select></div>
-            <div class="field"><label for="sugar">fasting blood sugar</label><input id="sugar" placeholder="95 mg/dL"></div>
-            <div class="field"><label for="diabetes">diabetes</label>
-              <select id="diabetes"><option value="">not specified</option><option>no</option><option>prediabetes</option><option>type 1, controlled</option><option>type 2, controlled</option><option>type 2, poorly controlled</option></select></div>
-            <div class="field"><label for="heartHealth">heart</label>
-              <select id="heartHealth"><option value="">not specified</option><option>no known problems</option><option>occasional symptoms</option><option>diagnosed condition</option></select></div>
-            <div class="field"><label for="lungs">lungs</label>
-              <select id="lungs"><option value="">not specified</option><option>no known problems</option><option>occasional symptoms</option><option>diagnosed condition</option></select></div>
-            <div class="field"><label for="digestion">digestion</label>
-              <select id="digestion"><option value="">not specified</option><option>no known problems</option><option>frequent trouble</option><option>diagnosed condition</option></select></div>
-            <div class="field span2"><label for="medication">regular medication</label><input id="medication" placeholder="none, or list what you take"></div>
-            <div class="field"><label for="gynae">gynecological screening</label>
-              <select id="gynae"><option value="">not specified</option><option>up to date</option><option>overdue</option><option>never screened</option><option>not applicable</option></select></div>
-            <div class="field"><label for="pill">contraceptive pill</label>
-              <select id="pill"><option value="">not specified</option><option>never used</option><option>used in the past</option><option>taking it now</option><option>not applicable</option></select></div>
-          </div>
-
-          <div class="step grid2" data-title="Nutrition" hidden>
-            <div class="field"><label for="breakfast">breakfast</label>
-              <select id="breakfast"><option value="">not specified</option><option>every day</option><option>most days</option><option>rarely</option><option>never</option></select></div>
-            <div class="field"><label for="meals">meals</label>
-              <select id="meals"><option value="">not specified</option><option>three regular meals</option><option>two meals a day</option><option>irregular meals</option><option>mostly snacking</option></select></div>
-            <div class="field"><label for="produce">fruit and vegetables</label>
-              <select id="produce"><option value="">not specified</option><option>five or more a day</option><option>three or four a day</option><option>one or two a day</option><option>rarely</option></select></div>
-            <div class="field"><label for="fats">fats</label>
-              <select id="fats"><option value="">not specified</option><option>mostly unsaturated</option><option>mixed</option><option>mostly saturated or fried</option></select></div>
-            <div class="field"><label for="refined">refined foods</label>
-              <select id="refined"><option value="">not specified</option><option>rarely</option><option>a few times a week</option><option>most days</option><option>every day</option></select></div>
-            <div class="field"><label for="alcohol">alcohol</label>
-              <select id="alcohol"><option value="">not specified</option><option>none</option><option>occasional</option><option>weekly</option><option>daily</option></select></div>
-          </div>
-
-          <div class="step grid2" data-title="Psychological" hidden>
-            <div class="field"><label for="happiness">happiness</label>
-              <select id="happiness"><option value="">not specified</option><option>very happy</option><option>generally happy</option><option>mixed</option><option>generally unhappy</option></select></div>
-            <div class="field"><label for="anxiety">anxiety</label>
-              <select id="anxiety"><option value="">not specified</option><option>rarely anxious</option><option>sometimes anxious</option><option>often anxious</option><option>anxious most days</option></select></div>
-            <div class="field"><label for="relaxation">relaxation</label>
-              <select id="relaxation"><option value="">not specified</option><option>every day</option><option>a few times a week</option><option>rarely</option><option>never</option></select></div>
-            <div class="field"><label for="relationship">relationship</label>
-              <select id="relationship"><option value="">not specified</option><option>happy relationship</option><option>strained relationship</option><option>single and content</option><option>single and lonely</option></select></div>
-            <div class="field"><label for="work">work satisfaction</label>
-              <select id="work"><option value="">not specified</option><option>very satisfied</option><option>satisfied</option><option>neutral</option><option>dissatisfied</option></select></div>
-            <div class="field"><label for="social">social life</label>
-              <select id="social"><option value="">not specified</option><option>see friends often</option><option>see friends sometimes</option><option>see friends rarely</option><option>mostly isolated</option></select></div>
-            <div class="field span2"><label for="depression">mood</label>
-              <select id="depression"><option value="">not specified</option><option>mood is generally good</option><option>occasionally low</option><option>often low</option><option>Sometimes I think that life is not worth the struggle</option><option>I have had thoughts about suicide</option></select></div>
-          </div>
-
-          <div class="step grid2" data-title="Security" hidden>
-            <div class="field"><label for="driving">driving mileage</label><input id="driving" placeholder="8000 km a year"></div>
-            <div class="field"><label for="seatbelt">seat belt use</label>
-              <select id="seatbelt"><option value="">not specified</option><option>always</option><option>usually</option><option>sometimes</option><option>never</option></select></div>
-            <div class="field span2"><label for="risk">risk-taking</label>
-              <select id="risk"><option value="">not specified</option><option>cautious by nature</option><option>average</option><option>take some risks</option><option>often take risks</option></select></div>
-          </div>
-
-        </div>
-
-        <div class="stepbar">
-          <button class="btn" id="prevStep">Back</button>
-          <span class="stepcount" id="stepCount"></span>
-          <button class="btn" id="nextStep">Next</button>
-        </div>
-
         <button class="btn solid" id="runManual">Analyze values</button>
       </div>
     </div>
@@ -348,7 +220,7 @@ footer{margin-top:36px;padding-top:20px;border-top:1px solid var(--line);color:v
               <circle id="arc" cx="100" cy="100" r="88" fill="none" stroke="url(#g1)" stroke-width="2.5"
                 stroke-linecap="round" stroke-dasharray="0 553" transform="rotate(-90 100 100)"/>
               <defs><linearGradient id="g1" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0%" stop-color="#4CE0D2"/><stop offset="100%" stop-color="#7A6CF0"/>
+                <stop offset="0%" stop-color="#3DFF8A"/><stop offset="100%" stop-color="#00C96B"/>
               </linearGradient></defs>
             </svg>
             <div class="dial-core">
@@ -433,67 +305,18 @@ function extractAge(text) {
   return { age: null, body: text };
 }
 
-/* ---------- mode: one input pane at a time ---------- */
 let litTimer;
-function choose(mode) {
-  const pane  = mode === "pdf" ? $("paneReport") : $("paneManual");
-  const other = mode === "pdf" ? $("paneManual") : $("paneReport");
-
-  $("stage").hidden = false;
-  other.hidden = true;
-  pane.hidden = false;
-
-  $("intro").classList.add("small");
-  $("jumpPdf").classList.toggle("solid", mode === "pdf");
-  $("jumpManual").classList.toggle("solid", mode === "manual");
-
+function light(pane, focusEl) {
   document.querySelectorAll(".pane.lit").forEach(p => p.classList.remove("lit"));
   clearTimeout(litTimer);
   pane.classList.add("lit");
-  litTimer = setTimeout(() => pane.classList.remove("lit"), 2200);
-
-  $("stage").scrollIntoView({ behavior: "smooth", block: "start" });
-  setTimeout(() => (mode === "pdf" ? $("pdfAge") : $("age")).focus({ preventScroll: true }), 420);
+  pane.scrollIntoView({ behavior: "smooth", block: "center" });
+  if (focusEl) setTimeout(() => focusEl.focus(), 350);
+  litTimer = setTimeout(() => pane.classList.remove("lit"), 2600);
 }
-$("jumpPdf").onclick    = () => choose("pdf");
-$("jumpManual").onclick = () => choose("manual");
-$("toManual").onclick   = () => choose("manual");
-$("toPdf").onclick      = () => choose("pdf");
+$("jumpPdf").onclick    = () => light($("paneReport"), $("pdfAge"));
+$("jumpManual").onclick = () => light($("paneManual"), $("age"));
 
-/* ---------- stepped questionnaire ---------- */
-const steps = [...document.querySelectorAll(".step")];
-let stepAt = 0;
-
-steps.forEach((s, i) => {
-  const b = document.createElement("button");
-  b.type = "button";
-  b.textContent = s.dataset.title;
-  b.onclick = () => showStep(i);
-  $("steps").appendChild(b);
-});
-
-function stepFilled(s) {
-  return [...s.querySelectorAll("input,select")].some(el => el.value !== "");
-}
-function showStep(i) {
-  stepAt = Math.max(0, Math.min(steps.length - 1, i));
-  steps.forEach((s, n) => { s.hidden = n !== stepAt; });
-  [...$("steps").children].forEach((b, n) => {
-    b.classList.toggle("on", n === stepAt);
-    b.classList.toggle("filled", n !== stepAt && stepFilled(steps[n]));
-  });
-  $("stepCount").textContent = `section ${stepAt + 1} of ${steps.length} · ${steps[stepAt].dataset.title}`;
-  $("prevStep").disabled = stepAt === 0;
-  $("nextStep").disabled = stepAt === steps.length - 1;
-}
-$("prevStep").onclick = () => showStep(stepAt - 1);
-$("nextStep").onclick = () => showStep(stepAt + 1);
-document.querySelectorAll(".step input,.step select").forEach(el => {
-  el.addEventListener("change", () => showStep(stepAt));
-});
-showStep(0);
-
-/* ---------- file picking ---------- */
 const drop = $("drop"), fileInput = $("file");
 drop.onclick = () => fileInput.click();
 drop.onkeydown = e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); fileInput.click(); } };
@@ -554,7 +377,7 @@ function setDial(bio, chrono) {
   $("dialDelta").style.color = chrono ? color : "var(--ink-dim)";
 }
 
-/* PDF run — reads and sends the age field */
+/* PDF run — now reads and sends the age field */
 $("runPdf").onclick = async () => {
   const f = fileInput.files[0];
   if (!f) return fail("Pick a PDF first — drop one on the panel or click to browse.");
@@ -577,56 +400,10 @@ $("runPdf").onclick = async () => {
 
 $("runManual").onclick = async () => {
   const map = {
-    /* personal aspects */
-    age: $("age").value,
-    gender: $("gender").value,
-    race: $("race").value,
-    family_longevity: $("longevity").value,
-    education: $("education").value,
-    sleep_hours_avg: $("sleep").value,
-
-    /* heart disease risk */
-    total_cholesterol: $("chol").value,
-    blood_pressure: $("bp").value,
-    resting_heart_rate: $("rhr").value,
-    waist_to_hip_ratio: $("whr").value,
-    smoking: $("smoking").value,
-    family_heart_history: $("heartFamily").value,
-    stress: $("stress").value,
-    exercise_frequency: $("exercise").value,
-
-    /* medical aspects */
-    checkup_habits: $("checkups").value,
-    fasting_blood_sugar: $("sugar").value,
-    diabetes: $("diabetes").value,
-    heart: $("heartHealth").value,
-    lungs: $("lungs").value,
-    digestion: $("digestion").value,
-    medication: $("medication").value,
-    gynecological_screening: $("gynae").value,
-    contraceptive_pill: $("pill").value,
-
-    /* nutrition */
-    breakfast: $("breakfast").value,
-    meals: $("meals").value,
-    fruit_and_vegetables: $("produce").value,
-    fats: $("fats").value,
-    refined_foods: $("refined").value,
-    alcohol_consumption: $("alcohol").value,
-
-    /* psychological aspects */
-    happiness: $("happiness").value,
-    depression: $("depression").value,
-    anxiety: $("anxiety").value,
-    relaxation: $("relaxation").value,
-    relationship: $("relationship").value,
-    work_satisfaction: $("work").value,
-    social_life: $("social").value,
-
-    /* security */
-    driving_mileage: $("driving").value,
-    seat_belt_use: $("seatbelt").value,
-    risk_taking: $("risk").value
+    age: $("age").value, resting_heart_rate: $("rhr").value, blood_pressure: $("bp").value,
+    fasting_blood_sugar: $("sugar").value, total_cholesterol: $("chol").value,
+    sleep_hours_avg: $("sleep").value, exercise_frequency: $("exercise").value,
+    smoking: $("smoking").value, alcohol_consumption: $("alcohol").value
   };
   const measures = Object.fromEntries(Object.entries(map).filter(([, v]) => v !== ""));
   if (!Object.keys(measures).length) return fail("Nothing to read yet — fill in at least one value.");
