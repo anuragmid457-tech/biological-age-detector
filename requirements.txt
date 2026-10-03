@@ -26,3 +26,5 @@ unstructured==0.15.9
 # Optional: vector store for RAG (if you're doing retrieval over uploaded docs)
 chromadb==0.5.5
 tiktoken==0.7.0
+sqlalchemy
+psycopg[binary]

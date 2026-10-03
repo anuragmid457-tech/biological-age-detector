@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Expert review · Chronos</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='chronos.css') }}">
+  <style>
+    body {
+      margin: 0;
+      font-family: "Public Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+      background: #f3f6f5;
+    }
+    @media (prefers-color-scheme: dark) { body { background: #111a1b; } }
+  </style>
+</head>
+<body>
+  <main id="expert"></main>
+  <script src="{{ url_for('static', filename='chronos.js') }}"></script>
+  <script>Chronos.mountExpertPage(document.getElementById("expert"));</script>
+</body>
+</html>

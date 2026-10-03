@@ -27,3 +27,17 @@ tmp/
 .idea/
 .DS_Store
 Thumbs.db
+# Secrets: contains your API key and Supabase password
+.env
+
+# Local health data
+chronos.db
+chronos.db-wal
+chronos.db-shm
+chroma_corrections/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
