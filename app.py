@@ -61,10 +61,16 @@ def _store(source, result, reading, **extra):
 
 # ---------------------------------------------------------------- pages
 
-# Renamed from detect(): that name shadowed the imported PDF detector, so /api/pdf
-# was calling this view function instead of the AI pipeline.
+# Landing page. (The old view here was named detect(), which shadowed the imported
+# PDF detector, so /api/pdf called the page view instead of the AI pipeline.)
 @app.route("/")
 def index():
+    return render_template("index.html")
+
+
+# The reading app: questionnaire, PDF upload, results, corrections and chat.
+@app.route("/app")
+def reading_app():
     return render_template("detector.html")
 
 

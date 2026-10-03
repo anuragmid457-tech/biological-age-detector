@@ -2,132 +2,143 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Chronos — biological age readout</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chronos · biological age reading</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<!-- Shared theme: green scrollbars and arrows, plus the expert correction panel -->
+<link rel="stylesheet" href="{{ url_for('static', filename='chronos.css') }}">
 <style>
 :root{
   --void:#070B12;
   --panel:#0D141F;
   --panel-2:#111B29;
   --line:#1E2C3F;
+  --line-2:#2A3B52;
   --ink:#DCE6F2;
   --ink-dim:#7A8CA3;
-  --signal:#4CE0D2;
-  --signal-2:#7A6CF0;
-  --good:#3FD98A;
-  --bad:#F2555A;
+  --ink-faint:#4A5A70;
+  --signal:#3DFF8A;
+  --signal-deep:#00C96B;
+  --signal-soft:rgba(61,255,138,.12);
+  --on-signal:#04140B;
+  --bad:#FF5A64;
   --warn:#F2A65A;
-  --r:3px;
+  --r:4px;
 }
 *{box-sizing:border-box}
 html,body{margin:0;padding:0}
-html{scroll-behavior:smooth}
 body{
   background:var(--void);color:var(--ink);
   font-family:"IBM Plex Sans",system-ui,sans-serif;line-height:1.6;
   -webkit-font-smoothing:antialiased;
-  min-width:1240px;
 }
 body::before{
   content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
   background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
-  background-size:64px 64px;opacity:.22;
+  background-size:64px 64px;opacity:.2;
   mask-image:radial-gradient(ellipse 80% 60% at 50% 0%,#000 20%,transparent 78%);
 }
-.wrap{position:relative;z-index:1;max-width:1400px;margin:0 auto;padding:0 32px 60px}
+a{color:var(--signal)}
 [hidden]{display:none!important}
+.wrap{position:relative;z-index:1;max-width:1360px;margin:0 auto;padding:0 28px 72px}
 
-.masthead{
-  display:flex;align-items:center;justify-content:space-between;gap:16px;padding:22px 0;
-  border-bottom:1px solid var(--line);
-  position:sticky;top:0;z-index:5;
-  background:rgba(7,11,18,.88);backdrop-filter:blur(8px);
-}
-.mark{display:flex;align-items:center;gap:12px;font-family:"Space Grotesk",sans-serif;font-weight:700;letter-spacing:-.02em;font-size:18px}
-.status{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--ink-dim);display:flex;align-items:center;gap:8px}
+/* ---------- masthead */
+.masthead{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:20px 0;border-bottom:1px solid var(--line)}
+.mark{display:flex;align-items:center;gap:12px;font-family:"Space Grotesk",sans-serif;font-weight:700;letter-spacing:-.02em;font-size:18px;color:var(--ink);text-decoration:none}
+.nav{display:flex;align-items:center;gap:22px;font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--ink-dim)}
+.nav a{color:var(--ink-dim);text-decoration:none}
+.nav a:hover{color:var(--signal)}
+.status{display:flex;align-items:center;gap:8px}
 .dot{width:7px;height:7px;border-radius:50%;background:var(--signal);box-shadow:0 0 10px var(--signal)}
+.status.busy .dot{animation:blink 1s ease-in-out infinite}
+@keyframes blink{50%{opacity:.25}}
 
-.intro{padding:48px 0 36px;max-width:760px}
-.intro h1{font-family:"Space Grotesk",sans-serif;font-weight:700;font-size:52px;line-height:1.04;letter-spacing:-.035em;margin:0 0 18px}
-.intro p{max-width:60ch;color:var(--ink-dim);font-size:17px;margin:0 0 26px}
-.intro.small{padding:28px 0 24px}
-.intro.small h1{font-size:32px;margin:0 0 10px}
-.intro.small p{font-size:15px;margin:0 0 18px}
-.jump{display:flex;gap:12px}
+.intro{padding:40px 0 30px;max-width:720px}
+.intro h1{font-family:"Space Grotesk",sans-serif;font-weight:700;font-size:clamp(30px,4vw,44px);line-height:1.06;letter-spacing:-.035em;margin:0 0 12px}
+.intro p{color:var(--ink-dim);font-size:16px;margin:0;max-width:62ch}
+
+/* ---------- buttons */
 .btn{
   font-family:"Space Grotesk",sans-serif;font-size:14px;font-weight:500;
-  padding:11px 20px;border-radius:var(--r);border:1px solid var(--line);
+  padding:10px 18px;border-radius:var(--r);border:1px solid var(--line-2);
   background:transparent;color:var(--ink);cursor:pointer;
   transition:border-color .15s,background .15s,color .15s;
 }
-.btn:hover{border-color:var(--signal);color:var(--signal)}
-.btn.solid{background:var(--signal);border-color:var(--signal);color:#06121A;font-weight:700}
-.btn.solid:hover{background:#6BEDE1;color:#06121A}
-.btn:disabled{opacity:.45;cursor:not-allowed}
-.btn:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,.drop:focus-visible,.steps button:focus-visible{outline:2px solid var(--signal);outline-offset:3px}
+.btn:hover:not(:disabled){border-color:var(--signal);color:var(--signal)}
+.btn.solid{background:var(--signal);border-color:var(--signal);color:var(--on-signal);font-weight:700}
+.btn.solid:hover:not(:disabled){background:#8BFFBC;border-color:#8BFFBC;color:var(--on-signal)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn.wide{width:100%;padding:13px}
+:focus-visible{outline:2px solid var(--signal);outline-offset:3px}
 
-.stage{display:grid;grid-template-columns:1fr 460px;gap:28px;align-items:start}
-.inputs{display:grid;grid-template-columns:1fr;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--r)}
-.pane{background:var(--panel);padding:30px;transition:box-shadow .3s,background .3s}
-.pane h2{font-family:"Space Grotesk",sans-serif;font-size:20px;font-weight:700;letter-spacing:-.02em;margin:0 0 6px;transition:color .3s}
-.pane .sub{color:var(--ink-dim);font-size:14px;margin:0 0 22px}
-.pane.lit{background:#0F1B27;box-shadow:inset 0 0 0 1px var(--signal),0 0 34px -8px rgba(76,224,210,.4)}
-.pane.lit h2{color:var(--signal)}
+/* ---------- layout */
+.stage{display:grid;grid-template-columns:minmax(0,1fr) 440px;gap:28px;align-items:start}
+.card{border:1px solid var(--line);border-radius:var(--r);background:var(--panel);overflow:hidden}
+.card-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 20px;border-bottom:1px solid var(--line);background:var(--panel-2);font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--ink-dim)}
 
-.pane-head{display:flex;align-items:flex-start;justify-content:space-between;gap:20px}
-.pane-head .btn{flex:none;padding:8px 14px;font-size:13px}
+/* ---------- input card */
+.modes{display:flex;border-bottom:1px solid var(--line);background:var(--panel-2)}
+.mode{
+  flex:1;padding:15px 20px;border:0;border-bottom:2px solid transparent;background:none;cursor:pointer;
+  font-family:"Space Grotesk",sans-serif;font-size:15px;font-weight:500;color:var(--ink-dim);text-align:left;
+}
+.mode small{display:block;font-family:"IBM Plex Sans",sans-serif;font-size:12.5px;font-weight:400;color:var(--ink-faint);margin-top:2px}
+.mode[aria-selected="true"]{color:var(--signal);border-bottom-color:var(--signal);background:var(--panel)}
+.mode:hover{color:var(--ink)}
+.mode[aria-selected="true"]:hover{color:var(--signal)}
+.mode-body{padding:26px 28px 28px}
 
-.drop{border:1px dashed #2A3B52;border-radius:var(--r);padding:34px 20px;text-align:center;cursor:pointer;transition:border-color .15s,background .15s;background:var(--panel-2)}
-.drop:hover,.drop.over{border-color:var(--signal);background:#0F1C28}
+.tabs{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:22px}
+.tab{
+  display:flex;align-items:center;gap:8px;padding:7px 13px;border-radius:var(--r);
+  border:1px solid var(--line-2);background:transparent;color:var(--ink-dim);cursor:pointer;
+  font-family:"IBM Plex Mono",monospace;font-size:12.5px;
+}
+.tab:hover{color:var(--ink);border-color:#3A5070}
+.tab[aria-selected="true"]{color:var(--signal);border-color:var(--signal);background:var(--signal-soft)}
+.tab .n{min-width:18px;padding:0 5px;border-radius:9px;background:var(--line);color:var(--ink-dim);font-size:11px;text-align:center;line-height:18px}
+.tab .n:empty{display:none}
+.tab[aria-selected="true"] .n{background:var(--signal);color:var(--on-signal)}
+
+.section-intro{color:var(--ink-dim);font-size:14px;margin:-6px 0 18px;max-width:62ch}
+.fields{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,250px),1fr));gap:16px 18px;min-height:230px;align-content:start}
+.field{display:flex;flex-direction:column;gap:6px}
+.field label{font-size:13.5px;font-weight:500;color:var(--ink)}
+.field .unit{font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--ink-dim);margin-left:6px;font-weight:400}
+.field small{font-size:12.5px;color:var(--ink-dim);line-height:1.45}
+.field .warn{display:none;color:var(--warn)}
+.field.unusual .warn{display:block}
+.field.unusual input{border-color:var(--warn)}
+
+input,select,textarea{
+  background:var(--panel-2);border:1px solid var(--line);border-radius:var(--r);color:var(--ink);
+  padding:10px 12px;font-family:"IBM Plex Mono",monospace;font-size:13px;width:100%;
+}
+input::placeholder,textarea::placeholder{color:var(--ink-faint)}
+input:hover,select:hover,textarea:hover{border-color:rgba(61,255,138,.35)}
+select{cursor:pointer}
+
+.stepper{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:24px;padding-top:18px;border-top:1px solid var(--line)}
+.step-label{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--ink-dim);text-align:center}
+.run{margin-top:16px}
+.hint{font-size:13px;color:var(--ink-dim);margin:10px 0 0;text-align:center}
+
+.drop{border:1px dashed var(--line-2);border-radius:var(--r);padding:40px 20px;text-align:center;cursor:pointer;transition:border-color .15s,background .15s;background:var(--panel-2)}
+.drop:hover,.drop.over{border-color:var(--signal);background:#0E1D22}
 .drop b{display:block;font-family:"Space Grotesk",sans-serif;font-weight:500;font-size:15px;margin-top:10px}
 .drop span{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--ink-dim)}
 .filename{margin-top:12px;font-family:"IBM Plex Mono",monospace;font-size:12.5px;color:var(--signal);word-break:break-all}
+.pdf-age{max-width:260px;margin-bottom:18px}
 
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:13px}
-.field{display:flex;flex-direction:column;gap:6px}
-.field label{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--ink-dim);letter-spacing:.05em}
-input,select,textarea{background:var(--panel-2);border:1px solid var(--line);border-radius:var(--r);color:var(--ink);padding:9px 11px;font-family:"IBM Plex Mono",monospace;font-size:13px;width:100%}
-input::placeholder,textarea::placeholder{color:#4A5A70}
-input:hover,select:hover{border-color:#2C4260}
-.span2{grid-column:1/-1}
-.pane .btn.solid{margin-top:20px;width:100%;padding:12px}
-.pdf-age{margin-bottom:18px;max-width:300px}
-
-.steps{display:flex;flex-wrap:wrap;gap:6px;margin:16px 0 22px;padding-bottom:18px;border-bottom:1px solid var(--line)}
-.steps button{
-  font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.05em;
-  color:var(--ink-dim);background:transparent;border:1px solid var(--line);
-  border-radius:var(--r);padding:6px 11px;cursor:pointer;
-  transition:color .15s,border-color .15s;
-}
-.steps button:hover{color:var(--ink);border-color:#2C4260}
-.steps button.filled{color:var(--ink)}
-.steps button.on{color:var(--signal);border-color:var(--signal)}
-.stepwrap{min-height:322px}
-.stepbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:22px;padding-top:16px;border-top:1px solid var(--line)}
-.stepbar .btn{padding:9px 16px;font-size:13px}
-.stepcount{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--ink-dim);letter-spacing:.05em}
-
-.side{
-  display:flex;flex-direction:column;gap:28px;
-  position:fixed;top:96px;
-  width:460px;right:max(32px,calc((100% - 1400px) / 2 + 32px));
-  max-height:calc(100vh - 120px);overflow-y:auto;
-}
-.card{border:1px solid var(--line);border-radius:var(--r);background:var(--panel);overflow:hidden;flex:none}
-.card-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 20px;border-bottom:1px solid var(--line);background:var(--panel-2);font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--ink-dim)}
-
-.dial-box{padding:22px 20px 18px}
-.dial{position:relative;width:196px;margin:0 auto}
+/* ---------- result card */
+.side{display:flex;flex-direction:column;gap:24px;position:sticky;top:20px}
+.dial-box{padding:24px 20px 10px}
+.dial{position:relative;width:210px;margin:0 auto}
 .dial svg{width:100%;display:block;overflow:visible}
 .dial-core{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
-.dial-num{
-  font-family:"Space Grotesk",sans-serif;font-weight:700;font-size:52px;line-height:1;
-  letter-spacing:-.05em;font-variant-numeric:tabular-nums;
-  transition:color .5s,text-shadow .5s;
-}
+.dial-num{font-family:"Space Grotesk",sans-serif;font-weight:700;font-size:54px;line-height:1;letter-spacing:-.05em;font-variant-numeric:tabular-nums;transition:color .5s,text-shadow .5s}
 .dial-cap{font-family:"IBM Plex Mono",monospace;font-size:10px;color:var(--ink-dim);letter-spacing:.14em;margin-top:8px}
 .dial-delta{font-family:"IBM Plex Mono",monospace;font-size:12px;margin-top:5px;min-height:18px;color:var(--ink-dim);text-align:center;padding:0 12px}
 .tick{stroke:var(--line);stroke-width:1.5}
@@ -135,209 +146,159 @@ input:hover,select:hover{border-color:#2C4260}
 .sweep{transform-origin:center;animation:sweep 9s linear infinite}
 @keyframes sweep{to{transform:rotate(360deg)}}
 #arc{transition:stroke-dasharray 1.1s cubic-bezier(.22,.61,.36,1),stroke .5s}
+.dial.good .dial-num{color:var(--signal);text-shadow:0 0 26px rgba(61,255,138,.5)}
+.dial.good .tick.hot{stroke:var(--signal)}
+.dial.mid .dial-num{color:var(--warn);text-shadow:0 0 26px rgba(242,166,90,.5)}
+.dial.mid .tick.hot{stroke:var(--warn)}
+.dial.bad .dial-num{color:var(--bad);text-shadow:0 0 26px rgba(255,90,100,.5)}
+.dial.bad .tick.hot{stroke:var(--bad)}
 
-.dial.good .dial-num{color:var(--good);text-shadow:0 0 26px rgba(63,217,138,.55)}
-.dial.good .tick.hot{stroke:var(--good)}
-.dial.bad  .dial-num{color:var(--bad); text-shadow:0 0 26px rgba(242,85,90,.55)}
-.dial.bad  .tick.hot{stroke:var(--bad)}
-.dial.mid  .dial-num{color:var(--warn);text-shadow:0 0 26px rgba(242,166,90,.5)}
-.dial.mid  .tick.hot{stroke:var(--warn)}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--line)}
+.stat{padding:14px 16px;border-right:1px solid var(--line)}
+.stat:last-child{border-right:0}
+.stat b{display:block;font-family:"Space Grotesk",sans-serif;font-size:22px;font-weight:700;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.stat span{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--ink-dim)}
+.meter{height:4px;border-radius:2px;background:var(--line);margin-top:8px;overflow:hidden}
+.meter i{display:block;height:100%;width:0;background:var(--signal);transition:width 1s cubic-bezier(.22,.61,.36,1),background .5s}
 
-@media (prefers-reduced-motion:reduce){.sweep{animation:none}*{transition:none!important}html{scroll-behavior:auto}}
+.block{padding:18px 20px;border-top:1px solid var(--line)}
+.block h3{margin:0 0 12px;font-family:"IBM Plex Mono",monospace;font-size:11.5px;font-weight:500;color:var(--ink-dim)}
+.bars{display:grid;gap:9px}
+.bar{display:grid;grid-template-columns:96px 1fr 62px;align-items:center;gap:10px;font-size:13px}
+.bar .track{position:relative;height:8px;background:var(--panel-2);border-radius:4px}
+.bar .track::before{content:"";position:absolute;left:50%;top:-3px;bottom:-3px;width:1px;background:var(--line-2)}
+.bar .fill{position:absolute;top:0;bottom:0;border-radius:4px;transition:width .9s cubic-bezier(.22,.61,.36,1)}
+.bar .fill.younger{right:50%;background:var(--signal)}
+.bar .fill.older{left:50%;background:var(--bad)}
+.bar .val{font-family:"IBM Plex Mono",monospace;font-size:12px;text-align:right;font-variant-numeric:tabular-nums}
+.legend{display:flex;justify-content:space-between;font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--ink-faint);margin:8px 0 0 106px;padding-right:72px}
 
-.report-body{padding:20px;border-top:1px solid var(--line);max-height:206px;overflow-y:auto}
+.care{margin:0;padding:14px 20px;border-top:1px solid var(--line);background:rgba(242,166,90,.08);font-size:14px}
+.care a{color:var(--warn)}
+.report-body{padding:18px 20px;border-top:1px solid var(--line);max-height:320px;overflow-y:auto}
 .empty{color:var(--ink-dim);font-size:14px;margin:0}
-.report{white-space:pre-wrap;font-size:13.5px;line-height:1.7}
+.report{white-space:pre-wrap;font-size:13.5px;line-height:1.7;margin:0}
 .err{color:var(--warn);font-family:"IBM Plex Mono",monospace;font-size:12.5px;line-height:1.6;margin:0;white-space:pre-wrap;word-break:break-word}
+.learned{font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--signal);margin:12px 0 0}
+.correct{padding:14px 20px 18px;border-top:1px solid var(--line)}
+.correct:empty{display:none}
+/* Fit the correction fields into the narrow results column */
+.correct .chr-cform{padding:16px}
+.correct .chr-cgrid{grid-template-columns:repeat(auto-fill,minmax(6.5rem,1fr));gap:12px 10px}
+.correct .chr-cgrid-who{grid-template-columns:repeat(auto-fill,minmax(9rem,1fr))}
+.correct .chr-cfield{padding-left:6px}
+.correct .chr-cfield label{font-size:13px}
+.correct .chr-model-value{font-size:12px}
+.correct .chr-intro{font-size:13.5px}
+.correct .chr-unit{display:none} /* the headings already say years */
 
-.log{height:184px;overflow-y:auto;padding:18px 20px;display:flex;flex-direction:column;gap:14px}
-.msg{max-width:88%;font-size:14px;line-height:1.65;padding:10px 13px;border-radius:var(--r);white-space:pre-wrap;word-break:break-word}
-.msg.you{align-self:flex-end;background:#16283A;border:1px solid #23415C}
+/* ---------- chat */
+.log{height:260px;overflow-y:auto;padding:16px 20px;display:flex;flex-direction:column;gap:12px}
+.msg{max-width:88%;font-size:14px;line-height:1.6;padding:9px 12px;border-radius:var(--r);white-space:pre-wrap;word-break:break-word}
+.msg.you{align-self:flex-end;background:#0E2A1C;border:1px solid #1F5C3B}
 .msg.bot{align-self:flex-start;background:var(--panel-2);border:1px solid var(--line)}
 .msg.sys{align-self:flex-start;color:var(--ink-dim);font-size:13px;background:none;border:none;padding:0;max-width:100%}
-.composer{display:flex;gap:9px;padding:14px 20px;border-top:1px solid var(--line);background:var(--panel-2)}
+.composer{display:flex;gap:9px;padding:12px 20px;border-top:1px solid var(--line);background:var(--panel-2)}
 .composer textarea{resize:none;height:40px;font-family:"IBM Plex Sans",sans-serif;font-size:14px;line-height:1.4}
 .composer .btn{padding:0 16px;white-space:nowrap}
 
-.bars{display:flex;gap:4px;align-items:flex-end;height:18px}
-.bars i{width:3px;background:var(--signal);animation:pulse 1.1s ease-in-out infinite;border-radius:1px}
-.bars i:nth-child(2){animation-delay:.13s}.bars i:nth-child(3){animation-delay:.26s}
-.bars i:nth-child(4){animation-delay:.39s}.bars i:nth-child(5){animation-delay:.52s}
-@keyframes pulse{0%,100%{height:4px;opacity:.35}50%{height:18px;opacity:1}}
+.spin{display:inline-flex;gap:3px;align-items:flex-end;height:14px}
+.spin i{width:3px;background:var(--signal);animation:pulse 1.1s ease-in-out infinite;border-radius:1px}
+.spin i:nth-child(2){animation-delay:.13s}.spin i:nth-child(3){animation-delay:.26s}.spin i:nth-child(4){animation-delay:.39s}
+@keyframes pulse{0%,100%{height:3px;opacity:.35}50%{height:14px;opacity:1}}
 
-footer{margin-top:36px;padding-top:20px;border-top:1px solid var(--line);color:var(--ink-dim);font-size:13px}
+footer{margin-top:40px;padding-top:18px;border-top:1px solid var(--line);color:var(--ink-dim);font-size:13px}
+
+@media (max-width:1060px){
+  .stage{grid-template-columns:1fr}
+  .side{position:static}
+}
+@media (max-width:560px){
+  .wrap{padding:0 16px 56px}
+  .mode-body{padding:20px 18px 22px}
+  .nav .status span:last-child{display:none}
+  .bar{grid-template-columns:80px 1fr 54px}
+  .legend{margin-left:90px;padding-right:64px}
+}
+@media (prefers-reduced-motion:reduce){
+  .sweep,.status.busy .dot{animation:none}
+  *{transition:none!important}
+}
 </style>
 </head>
 <body>
 <div class="wrap">
 
   <header class="masthead">
-    <div class="mark">
+    <a class="mark" href="{{ url_for('index') }}">
       <svg width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true">
-        <circle cx="11" cy="11" r="9.5" stroke="#4CE0D2" stroke-width="1.4"/>
-        <circle cx="11" cy="11" r="2" fill="#7A6CF0"/>
-        <path d="M11 11 L11 3.5" stroke="#4CE0D2" stroke-width="1.4"/>
-        <path d="M11 11 L16.5 14.5" stroke="#7A6CF0" stroke-width="1.4"/>
+        <circle cx="11" cy="11" r="9.5" stroke="#3DFF8A" stroke-width="1.4"/>
+        <circle cx="11" cy="11" r="2" fill="#00C96B"/>
+        <path d="M11 11 L11 3.5" stroke="#3DFF8A" stroke-width="1.4"/>
+        <path d="M11 11 L16.5 14.5" stroke="#00C96B" stroke-width="1.4"/>
       </svg>
       Chronos
-    </div>
-    <div class="status"><span class="dot"></span><span id="status">model idle</span></div>
+    </a>
+    <nav class="nav">
+      <a href="{{ url_for('expert_page') }}">Expert review</a>
+      <div class="status" id="status"><span class="dot"></span><span id="statusText">model idle</span></div>
+    </nav>
   </header>
 
-  <section class="intro" id="intro">
+  <section class="intro">
     <h1>Your body keeps a different clock than your birthday.</h1>
-    <p>Chronos reads your biomarkers, lifestyle signals and vitals, then estimates the age your body is actually running at. Pick how you want to start.</p>
-    <div class="jump">
-      <button class="btn solid" id="jumpPdf">Send a report</button>
-      <button class="btn" id="jumpManual">Enter values</button>
-    </div>
+    <p>Answer the questions you know, or upload a lab report. Every question is optional: the more you fill in, the more reliable the reading.</p>
   </section>
 
-  <div class="stage" id="stage" hidden>
+  <div class="stage">
 
-    <div class="inputs">
+    <!-- ===================== inputs ===================== -->
+    <div class="card">
+      <div class="modes" role="tablist" aria-label="How to give your details">
+        <button class="mode" role="tab" id="modeQ" aria-selected="true" aria-controls="paneQ" data-mode="questions">
+          Answer questions<small>Lifestyle, history and blood test values</small>
+        </button>
+        <button class="mode" role="tab" id="modeR" aria-selected="false" aria-controls="paneR" data-mode="report">
+          Upload a lab report<small>A PDF of blood work or a check-up</small>
+        </button>
+      </div>
 
-      <div class="pane" id="paneReport" hidden>
-        <div class="pane-head">
-          <div>
-            <h2>Send a lab report</h2>
-            <p class="sub">A PDF of blood work, a check-up summary or a health record.</p>
-          </div>
-          <button class="btn" id="toManual">Enter values instead</button>
+      <div class="mode-body" id="paneQ" role="tabpanel" aria-labelledby="modeQ">
+        <div class="tabs" id="tabs" role="tablist" aria-label="Questionnaire sections"></div>
+        <div id="sections"><p class="empty">Loading the questions…</p></div>
+        <div class="stepper">
+          <button class="btn" id="back" type="button">Back</button>
+          <div class="step-label" id="stepLabel"></div>
+          <button class="btn" id="next" type="button">Next</button>
         </div>
+        <button class="btn solid wide run" id="runQ" type="button">Get my reading</button>
+        <p class="hint" id="answeredHint">No questions answered yet.</p>
+      </div>
 
+      <div class="mode-body" id="paneR" role="tabpanel" aria-labelledby="modeR" hidden>
         <div class="field pdf-age">
-          <label for="pdfAge">your age — optional, for the comparison</label>
-          <input id="pdfAge" type="number" min="1" max="120" placeholder="21">
+          <label for="pdfAge">Your age <span class="unit">years</span></label>
+          <input id="pdfAge" type="number" step="any" min="1" max="120" placeholder="optional">
+          <small>Lets the reading compare your body's age with your real age.</small>
         </div>
-
         <div class="drop" id="drop" tabindex="0" role="button" aria-label="Choose a PDF file">
-          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#4CE0D2" stroke-width="1.4" aria-hidden="true">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#3DFF8A" stroke-width="1.4" aria-hidden="true">
             <path d="M12 16V4m0 0L7 9m5-5 5 5"/><path d="M4 17v2a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-2"/>
           </svg>
           <b>Drop a PDF here</b>
-          <span>or click to browse · max 10 MB</span>
+          <span>or click to browse, up to 10 MB</span>
           <div class="filename" id="filename"></div>
         </div>
         <input type="file" id="file" accept="application/pdf" hidden>
-        <button class="btn solid" id="runPdf">Analyze report</button>
-      </div>
-
-      <div class="pane" id="paneManual" hidden>
-        <div class="pane-head">
-          <div>
-            <h2>Enter values</h2>
-            <p class="sub">Six short sections. Fill in what you know and leave the rest blank.</p>
-          </div>
-          <button class="btn" id="toPdf">Send a report instead</button>
-        </div>
-
-        <nav class="steps" id="steps" aria-label="Questionnaire sections"></nav>
-
-        <div class="stepwrap">
-
-          <div class="step grid2" data-title="Personal">
-            <div class="field"><label for="age">age</label><input id="age" type="number" min="1" max="120" placeholder="34"></div>
-            <div class="field"><label for="gender">gender</label>
-              <select id="gender"><option value="">not specified</option><option>female</option><option>male</option><option>other</option></select></div>
-            <div class="field"><label for="race">race or ethnicity</label>
-              <select id="race"><option value="">not specified</option><option>White</option><option>Black</option><option>South Asian</option><option>East Asian</option><option>Hispanic or Latino</option><option>Middle Eastern</option><option>Mixed or other</option></select></div>
-            <div class="field"><label for="longevity">family longevity</label>
-              <select id="longevity"><option value="">not specified</option><option>most relatives lived past 85</option><option>most lived to 75-85</option><option>most lived to 65-75</option><option>several died before 65</option><option>unknown</option></select></div>
-            <div class="field"><label for="education">education</label>
-              <select id="education"><option value="">not specified</option><option>less than high school</option><option>high school</option><option>some college</option><option>bachelor's degree</option><option>postgraduate degree</option></select></div>
-            <div class="field"><label for="sleep">average sleep</label><input id="sleep" placeholder="6.5 hours"></div>
-          </div>
-
-          <div class="step grid2" data-title="Heart" hidden>
-            <div class="field"><label for="chol">total cholesterol</label><input id="chol" placeholder="180 mg/dL"></div>
-            <div class="field"><label for="bp">blood pressure</label><input id="bp" placeholder="120/80 mmHg"></div>
-            <div class="field"><label for="rhr">resting heart rate</label><input id="rhr" placeholder="68 bpm"></div>
-            <div class="field"><label for="whr">waist to hip ratio</label><input id="whr" placeholder="0.85"></div>
-            <div class="field"><label for="smoking">smoking</label>
-              <select id="smoking"><option value="">not specified</option><option>no</option><option>former</option><option>yes</option></select></div>
-            <div class="field"><label for="heartFamily">family heart history</label>
-              <select id="heartFamily"><option value="">not specified</option><option>none</option><option>one relative after 60</option><option>one relative before 60</option><option>two or more before 60</option></select></div>
-            <div class="field"><label for="stress">stress</label>
-              <select id="stress"><option value="">not specified</option><option>low</option><option>moderate</option><option>high</option><option>very high</option></select></div>
-            <div class="field"><label for="exercise">physical activity</label>
-              <select id="exercise"><option value="">not specified</option><option>none</option><option>1x/week</option><option>3x/week</option><option>5x/week</option><option>daily</option></select></div>
-          </div>
-
-          <div class="step grid2" data-title="Medical" hidden>
-            <div class="field"><label for="checkups">check-up habits</label>
-              <select id="checkups"><option value="">not specified</option><option>yearly</option><option>every few years</option><option>only when unwell</option><option>never</option></select></div>
-            <div class="field"><label for="sugar">fasting blood sugar</label><input id="sugar" placeholder="95 mg/dL"></div>
-            <div class="field"><label for="diabetes">diabetes</label>
-              <select id="diabetes"><option value="">not specified</option><option>no</option><option>prediabetes</option><option>type 1, controlled</option><option>type 2, controlled</option><option>type 2, poorly controlled</option></select></div>
-            <div class="field"><label for="heartHealth">heart</label>
-              <select id="heartHealth"><option value="">not specified</option><option>no known problems</option><option>occasional symptoms</option><option>diagnosed condition</option></select></div>
-            <div class="field"><label for="lungs">lungs</label>
-              <select id="lungs"><option value="">not specified</option><option>no known problems</option><option>occasional symptoms</option><option>diagnosed condition</option></select></div>
-            <div class="field"><label for="digestion">digestion</label>
-              <select id="digestion"><option value="">not specified</option><option>no known problems</option><option>frequent trouble</option><option>diagnosed condition</option></select></div>
-            <div class="field span2"><label for="medication">regular medication</label><input id="medication" placeholder="none, or list what you take"></div>
-            <div class="field"><label for="gynae">gynecological screening</label>
-              <select id="gynae"><option value="">not specified</option><option>up to date</option><option>overdue</option><option>never screened</option><option>not applicable</option></select></div>
-            <div class="field"><label for="pill">contraceptive pill</label>
-              <select id="pill"><option value="">not specified</option><option>never used</option><option>used in the past</option><option>taking it now</option><option>not applicable</option></select></div>
-          </div>
-
-          <div class="step grid2" data-title="Nutrition" hidden>
-            <div class="field"><label for="breakfast">breakfast</label>
-              <select id="breakfast"><option value="">not specified</option><option>every day</option><option>most days</option><option>rarely</option><option>never</option></select></div>
-            <div class="field"><label for="meals">meals</label>
-              <select id="meals"><option value="">not specified</option><option>three regular meals</option><option>two meals a day</option><option>irregular meals</option><option>mostly snacking</option></select></div>
-            <div class="field"><label for="produce">fruit and vegetables</label>
-              <select id="produce"><option value="">not specified</option><option>five or more a day</option><option>three or four a day</option><option>one or two a day</option><option>rarely</option></select></div>
-            <div class="field"><label for="fats">fats</label>
-              <select id="fats"><option value="">not specified</option><option>mostly unsaturated</option><option>mixed</option><option>mostly saturated or fried</option></select></div>
-            <div class="field"><label for="refined">refined foods</label>
-              <select id="refined"><option value="">not specified</option><option>rarely</option><option>a few times a week</option><option>most days</option><option>every day</option></select></div>
-            <div class="field"><label for="alcohol">alcohol</label>
-              <select id="alcohol"><option value="">not specified</option><option>none</option><option>occasional</option><option>weekly</option><option>daily</option></select></div>
-          </div>
-
-          <div class="step grid2" data-title="Psychological" hidden>
-            <div class="field"><label for="happiness">happiness</label>
-              <select id="happiness"><option value="">not specified</option><option>very happy</option><option>generally happy</option><option>mixed</option><option>generally unhappy</option></select></div>
-            <div class="field"><label for="anxiety">anxiety</label>
-              <select id="anxiety"><option value="">not specified</option><option>rarely anxious</option><option>sometimes anxious</option><option>often anxious</option><option>anxious most days</option></select></div>
-            <div class="field"><label for="relaxation">relaxation</label>
-              <select id="relaxation"><option value="">not specified</option><option>every day</option><option>a few times a week</option><option>rarely</option><option>never</option></select></div>
-            <div class="field"><label for="relationship">relationship</label>
-              <select id="relationship"><option value="">not specified</option><option>happy relationship</option><option>strained relationship</option><option>single and content</option><option>single and lonely</option></select></div>
-            <div class="field"><label for="work">work satisfaction</label>
-              <select id="work"><option value="">not specified</option><option>very satisfied</option><option>satisfied</option><option>neutral</option><option>dissatisfied</option></select></div>
-            <div class="field"><label for="social">social life</label>
-              <select id="social"><option value="">not specified</option><option>see friends often</option><option>see friends sometimes</option><option>see friends rarely</option><option>mostly isolated</option></select></div>
-            <div class="field span2"><label for="depression">mood</label>
-              <select id="depression"><option value="">not specified</option><option>mood is generally good</option><option>occasionally low</option><option>often low</option><option>Sometimes I think that life is not worth the struggle</option><option>I have had thoughts about suicide</option></select></div>
-          </div>
-
-          <div class="step grid2" data-title="Security" hidden>
-            <div class="field"><label for="driving">driving mileage</label><input id="driving" placeholder="8000 km a year"></div>
-            <div class="field"><label for="seatbelt">seat belt use</label>
-              <select id="seatbelt"><option value="">not specified</option><option>always</option><option>usually</option><option>sometimes</option><option>never</option></select></div>
-            <div class="field span2"><label for="risk">risk-taking</label>
-              <select id="risk"><option value="">not specified</option><option>cautious by nature</option><option>average</option><option>take some risks</option><option>often take risks</option></select></div>
-          </div>
-
-        </div>
-
-        <div class="stepbar">
-          <button class="btn" id="prevStep">Back</button>
-          <span class="stepcount" id="stepCount"></span>
-          <button class="btn" id="nextStep">Next</button>
-        </div>
-
-        <button class="btn solid" id="runManual">Analyze values</button>
+        <button class="btn solid wide run" id="runR" type="button">Read my report</button>
       </div>
     </div>
 
+    <!-- ===================== results ===================== -->
     <div class="side">
-      <div class="card">
-        <div class="card-bar"><span id="src">no input yet</span><span id="meter"></span></div>
+      <div class="card" id="resultCard">
+        <div class="card-bar"><span id="src">no reading yet</span><span id="meter"></span></div>
+
         <div class="dial-box">
           <div class="dial" id="dial">
             <svg viewBox="0 0 200 200" role="img" aria-label="Biological age dial">
@@ -348,7 +309,7 @@ footer{margin-top:36px;padding-top:20px;border-top:1px solid var(--line);color:v
               <circle id="arc" cx="100" cy="100" r="88" fill="none" stroke="url(#g1)" stroke-width="2.5"
                 stroke-linecap="round" stroke-dasharray="0 553" transform="rotate(-90 100 100)"/>
               <defs><linearGradient id="g1" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0%" stop-color="#4CE0D2"/><stop offset="100%" stop-color="#7A6CF0"/>
+                <stop offset="0%" stop-color="#3DFF8A"/><stop offset="100%" stop-color="#00C96B"/>
               </linearGradient></defs>
             </svg>
             <div class="dial-core">
@@ -358,37 +319,77 @@ footer{margin-top:36px;padding-top:20px;border-top:1px solid var(--line);color:v
             </div>
           </div>
         </div>
-        <div class="report-body" id="out">
-          <p class="empty">The reading appears here once you send a report or enter values.</p>
+
+        <div class="stats">
+          <div class="stat"><span>actual age</span><b id="statAge">—</b></div>
+          <div class="stat"><span>life expectancy</span><b id="statLife">—</b></div>
+          <div class="stat"><span>health score</span><b id="statHealth">—</b><div class="meter"><i id="healthBar"></i></div></div>
         </div>
+
+        <div class="block" id="sectionsBlock" hidden>
+          <h3>Years each area added or removed</h3>
+          <div class="bars" id="bars"></div>
+          <div class="legend"><span>younger</span><span>older</span></div>
+        </div>
+
+        <p class="care" id="care" hidden>
+          You mentioned feeling that life isn't worth it, or thoughts of suicide. That matters far more than any number here.
+          Please talk to a doctor, a counsellor or someone you trust.
+          <a href="https://findahelpline.com" target="_blank" rel="noopener">findahelpline.com</a> lists free, confidential lines.
+        </p>
+
+        <div class="report-body" id="out">
+          <p class="empty">Your reading appears here once you answer some questions or upload a report.</p>
+        </div>
+
+        <div class="correct" id="correct"></div>
       </div>
 
       <div class="card">
         <div class="card-bar"><span>ask about your health</span><span id="chatMeter"></span></div>
         <div class="log" id="log">
-          <div class="msg sys">Ask about the reading above, your biomarkers, sleep, diet or exercise. Health topics only.</div>
+          <div class="msg sys">Ask about your reading, your blood test values, sleep, diet or exercise. Health topics only.</div>
         </div>
         <div class="composer">
-          <textarea id="chatInput" placeholder="What does my cholesterol mean?" rows="1"></textarea>
-          <button class="btn solid" id="send">Send</button>
+          <textarea id="chatInput" placeholder="What does my health score mean?" rows="1" aria-label="Your question"></textarea>
+          <button class="btn solid" id="send" type="button">Send</button>
         </div>
       </div>
     </div>
 
   </div>
 
-  <footer>Chronos gives an estimate for your own curiosity. It is not a diagnosis and it does not replace a clinician.</footer>
+  <footer>Chronos gives an estimate for your own curiosity. It is not a diagnosis and does not replace a clinician.</footer>
 </div>
 
+<script src="{{ url_for('static', filename='chronos.js') }}"></script>
 <script>
-const API_PDF    = "/api/pdf";
-const API_MANUAL = "/api/manual";
-const API_CHAT   = "/api/chat";
-
+"use strict";
 const $ = id => document.getElementById(id);
 const CIRC = 2 * Math.PI * 88;
+const AREAS = [
+  ["personal", "Personal"], ["heart", "Heart"], ["medical", "Medical"],
+  ["nutrition", "Nutrition"], ["psychological", "Mind"], ["security", "Safety"],
+];
 
-/* dial ticks */
+function h(tag, attrs, ...kids) {
+  const n = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs || {})) {
+    if (v == null || v === false) continue;
+    if (k === "class") n.className = v;
+    else if (k.startsWith("on")) n.addEventListener(k.slice(2), v);
+    else n.setAttribute(k, v === true ? "" : v);
+  }
+  for (const kid of kids.flat()) {
+    if (kid == null || kid === false) continue;
+    n.append(kid instanceof Node ? kid : String(kid));
+  }
+  return n;
+}
+const round1 = v => Math.round(Number(v) * 10) / 10;
+const signed = v => { const n = round1(v); return (n > 0 ? "+" : "") + n; };
+
+/* ---------------- dial ticks */
 (() => {
   const g = $("ticks");
   for (let i = 0; i < 60; i++) {
@@ -402,103 +403,137 @@ const CIRC = 2 * Math.PI * 88;
   }
 })();
 
-function reason(d, status) {
-  if (!d) return `server returned ${status}`;
-  if (d.details && d.error) return `${d.error}\n\n${d.details}`;
-  return d.details || d.error || `server returned ${status}`;
+/* ---------------- input modes */
+function setMode(mode) {
+  const q = mode !== "report";
+  $("modeQ").setAttribute("aria-selected", q);
+  $("modeR").setAttribute("aria-selected", !q);
+  $("paneQ").hidden = !q;
+  $("paneR").hidden = q;
 }
-async function readJson(r) {
-  try { return await r.json(); } catch { return null; }
+document.querySelectorAll("[data-mode]").forEach(b => b.addEventListener("click", () => setMode(b.dataset.mode)));
+const fromHash = () => { if (location.hash === "#report") setMode("report"); };
+fromHash();
+window.addEventListener("hashchange", fromHash);
+
+/* ---------------- questionnaire */
+let sections = [];
+let current = 0;
+
+function fieldEl(f) {
+  const id = "q-" + f.key;
+  let control;
+  if (f.type === "select") {
+    control = h("select", { id, name: f.key },
+      h("option", { value: "" }, "Not answered"),
+      f.options.map(o => h("option", { value: o }, o)));
+  } else if (f.type === "number") {
+    control = h("input", { id, name: f.key, type: "number", step: "any", inputmode: "decimal" });
+  } else {
+    control = h("input", { id, name: f.key, type: "text", maxlength: 500, autocomplete: "off" });
+  }
+  const wrap = h("div", { class: "field" },
+    h("label", { for: id }, f.label, f.unit ? h("span", { class: "unit" }, f.unit) : null),
+    control,
+    f.help ? h("small", {}, f.help) : null,
+    f.type === "number" ? h("small", { class: "warn" }, "That looks unusual. Check the number and the unit.") : null);
+  wrap.dataset.key = f.key;
+  if (f.min != null) wrap.dataset.min = f.min;
+  if (f.max != null) wrap.dataset.max = f.max;
+  if (f.show_if) wrap.dataset.showIf = JSON.stringify(f.show_if);
+  return wrap;
 }
 
-function clean(t) {
-  return String(t)
-    .replace(/^\s*#{1,6}\s*/gm, "")
-    .replace(/\*\*(.+?)\*\*/gs, "$1")
-    .replace(/\*(.+?)\*/gs, "$1")
-    .replace(/^\s*[-*+•]\s+/gm, "")
-    .replace(/^\s*\d+[.)]\s+/gm, "")
-    .replace(/`{1,3}([^`]*)`{1,3}/gs, "$1")
-    .replace(/_{2,}(.+?)_{2,}/gs, "$1")
-    .replace(/^\s*[-—_]{3,}\s*$/gm, "")
-    .replace(/\n{3,}/g, "\n\n")
-    .trim();
-}
-
-function extractAge(text) {
-  let m = text.match(/BIOLOGICAL[_ ]AGE\s*[::]\s*(\d{1,3}(?:\.\d+)?)/i);
-  if (m) return { age: parseFloat(m[1]), body: text.replace(m[0], "").trim() };
-  m = text.match(/biological age[^0-9]{0,40}(\d{1,3}(?:\.\d+)?)/i);
-  if (m) return { age: parseFloat(m[1]), body: text };
-  return { age: null, body: text };
-}
-
-/* ---------- mode: one input pane at a time ---------- */
-let litTimer;
-function choose(mode) {
-  const pane  = mode === "pdf" ? $("paneReport") : $("paneManual");
-  const other = mode === "pdf" ? $("paneManual") : $("paneReport");
-
-  $("stage").hidden = false;
-  other.hidden = true;
-  pane.hidden = false;
-
-  $("intro").classList.add("small");
-  $("jumpPdf").classList.toggle("solid", mode === "pdf");
-  $("jumpManual").classList.toggle("solid", mode === "manual");
-
-  document.querySelectorAll(".pane.lit").forEach(p => p.classList.remove("lit"));
-  clearTimeout(litTimer);
-  pane.classList.add("lit");
-  litTimer = setTimeout(() => pane.classList.remove("lit"), 2200);
-
-  $("stage").scrollIntoView({ behavior: "smooth", block: "start" });
-  setTimeout(() => (mode === "pdf" ? $("pdfAge") : $("age")).focus({ preventScroll: true }), 420);
-}
-$("jumpPdf").onclick    = () => choose("pdf");
-$("jumpManual").onclick = () => choose("manual");
-$("toManual").onclick   = () => choose("manual");
-$("toPdf").onclick      = () => choose("pdf");
-
-/* ---------- stepped questionnaire ---------- */
-const steps = [...document.querySelectorAll(".step")];
-let stepAt = 0;
-
-steps.forEach((s, i) => {
-  const b = document.createElement("button");
-  b.type = "button";
-  b.textContent = s.dataset.title;
-  b.onclick = () => showStep(i);
-  $("steps").appendChild(b);
-});
-
-function stepFilled(s) {
-  return [...s.querySelectorAll("input,select")].some(el => el.value !== "");
-}
-function showStep(i) {
-  stepAt = Math.max(0, Math.min(steps.length - 1, i));
-  steps.forEach((s, n) => { s.hidden = n !== stepAt; });
-  [...$("steps").children].forEach((b, n) => {
-    b.classList.toggle("on", n === stepAt);
-    b.classList.toggle("filled", n !== stepAt && stepFilled(steps[n]));
+function buildForm() {
+  const tabs = $("tabs"), box = $("sections");
+  tabs.replaceChildren();
+  box.replaceChildren();
+  sections.forEach((s, i) => {
+    tabs.append(h("button", {
+      class: "tab", type: "button", role: "tab", id: "tab-" + s.id,
+      "aria-controls": "sec-" + s.id, onclick: () => showSection(i),
+    }, s.title, h("span", { class: "n" })));
+    box.append(h("div", { id: "sec-" + s.id, role: "tabpanel", "aria-labelledby": "tab-" + s.id, hidden: true },
+      s.intro ? h("p", { class: "section-intro" }, s.intro) : null,
+      h("div", { class: "fields" }, s.fields.map(fieldEl))));
   });
-  $("stepCount").textContent = `section ${stepAt + 1} of ${steps.length} · ${steps[stepAt].dataset.title}`;
-  $("prevStep").disabled = stepAt === 0;
-  $("nextStep").disabled = stepAt === steps.length - 1;
+  box.addEventListener("input", refresh);
+  box.addEventListener("change", refresh);
+  showSection(0);
+  refresh();
 }
-$("prevStep").onclick = () => showStep(stepAt - 1);
-$("nextStep").onclick = () => showStep(stepAt + 1);
-document.querySelectorAll(".step input,.step select").forEach(el => {
-  el.addEventListener("change", () => showStep(stepAt));
-});
-showStep(0);
 
-/* ---------- file picking ---------- */
+function showSection(i) {
+  current = i;
+  sections.forEach((s, j) => {
+    $("sec-" + s.id).hidden = j !== i;
+    $("tab-" + s.id).setAttribute("aria-selected", j === i);
+  });
+  $("stepLabel").textContent = `section ${i + 1} of ${sections.length} · ${sections[i].title}`;
+  $("back").disabled = i === 0;
+  $("next").disabled = i === sections.length - 1;
+}
+$("back").onclick = () => current > 0 && showSection(current - 1);
+$("next").onclick = () => current < sections.length - 1 && showSection(current + 1);
+
+function refresh() {
+  const box = $("sections");
+  box.querySelectorAll("[data-show-if]").forEach(wrap => {
+    const rule = JSON.parse(wrap.dataset.showIf);
+    wrap.hidden = !Object.entries(rule).every(([key, allowed]) => {
+      const ctl = box.querySelector(`[name="${key}"]`);
+      return ctl && allowed.includes(ctl.value);
+    });
+  });
+  box.querySelectorAll('input[type="number"]').forEach(inp => {
+    const w = inp.closest(".field");
+    const v = inp.value === "" ? null : Number(inp.value);
+    const lo = w.dataset.min != null ? Number(w.dataset.min) : -Infinity;
+    const hi = w.dataset.max != null ? Number(w.dataset.max) : Infinity;
+    w.classList.toggle("unusual", v != null && (v < lo || v > hi));
+  });
+  let total = 0;
+  sections.forEach(s => {
+    const n = [...$("sec-" + s.id).querySelectorAll(".field")]
+      .filter(f => !f.hidden && f.querySelector("input,select").value.trim() !== "").length;
+    total += n;
+    $("tab-" + s.id).querySelector(".n").textContent = n ? String(n) : "";
+  });
+  $("answeredHint").textContent = total
+    ? `${total} question${total === 1 ? "" : "s"} answered. You can send now or keep going.`
+    : "No questions answered yet.";
+}
+
+function collect() {
+  const out = {};
+  $("sections").querySelectorAll(".field").forEach(w => {
+    if (w.hidden) return;
+    const c = w.querySelector("input,select");
+    const v = c.value.trim();
+    if (v !== "") out[c.name] = c.type === "number" ? Number(v) : v;
+  });
+  return out;
+}
+
+async function loadQuestions() {
+  try {
+    const r = await fetch("/api/questions");
+    const d = await r.json();
+    if (!d.success) throw new Error();
+    sections = d.sections;
+    buildForm();
+  } catch (e) {
+    $("sections").replaceChildren(h("p", { class: "err" }, "The questions didn't load. Refresh the page to try again."));
+  }
+}
+loadQuestions();
+
+/* ---------------- PDF */
 const drop = $("drop"), fileInput = $("file");
 drop.onclick = () => fileInput.click();
 drop.onkeydown = e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); fileInput.click(); } };
-["dragenter","dragover"].forEach(t => drop.addEventListener(t, e => { e.preventDefault(); drop.classList.add("over"); }));
-["dragleave","drop"].forEach(t => drop.addEventListener(t, e => { e.preventDefault(); drop.classList.remove("over"); }));
+["dragenter", "dragover"].forEach(t => drop.addEventListener(t, e => { e.preventDefault(); drop.classList.add("over"); }));
+["dragleave", "drop"].forEach(t => drop.addEventListener(t, e => { e.preventDefault(); drop.classList.remove("over"); }));
 drop.addEventListener("drop", e => { if (e.dataTransfer.files[0]) { fileInput.files = e.dataTransfer.files; showFile(); } });
 fileInput.onchange = showFile;
 function showFile() {
@@ -506,37 +541,101 @@ function showFile() {
   $("filename").textContent = f ? `${f.name} · ${(f.size / 1048576).toFixed(1)} MB` : "";
 }
 
-const spinner = '<span class="bars"><i></i><i></i><i></i><i></i><i></i></span>';
+/* ---------------- talking to the server */
+const SPIN = '<span class="spin"><i></i><i></i><i></i><i></i></span>';
+async function readJson(r) { try { return await r.json(); } catch { return null; } }
+function reason(d, status) {
+  if (!d) return `The server answered with status ${status}.`;
+  return [d.error, d.details].filter(Boolean).join("\n\n") || `The server answered with status ${status}.`;
+}
 function busy(on, label) {
-  $("meter").innerHTML = on ? spinner : "";
-  $("status").textContent = on ? "reading" : "model idle";
-  $("runPdf").disabled = $("runManual").disabled = on;
+  $("meter").innerHTML = on ? SPIN : "";
+  $("status").classList.toggle("busy", on);
+  $("statusText").textContent = on ? "reading" : "model idle";
+  $("runQ").disabled = $("runR").disabled = on;
+  if (on) {
+    $("runQ").textContent = $("runR").textContent = "Reading…";
+  } else {
+    $("runQ").textContent = "Get my reading";
+    $("runR").textContent = "Read my report";
+  }
   if (label) $("src").textContent = label;
 }
 function fail(msg) {
-  $("out").innerHTML = '<p class="err"></p>';
-  $("out").firstChild.textContent = msg;
+  $("out").replaceChildren(h("p", { class: "err" }, msg));
 }
 
-function render(text, chrono) {
-  const { age, body } = extractAge(String(text));
-  $("out").innerHTML = '<div class="report"></div>';
-  $("out").firstChild.textContent = clean(body);
-  if (age !== null) setDial(age, chrono);
-  else {
-    $("dialDelta").textContent = "no estimate returned";
-    $("dialDelta").style.color = "var(--ink-dim)";
-  }
+$("runQ").onclick = async () => {
+  const answers = collect();
+  const n = Object.keys(answers).length;
+  if (!n) return fail("Answer at least one question first. Every question is optional, but the reading needs something to go on.");
+  busy(true, `${n} answer${n === 1 ? "" : "s"}`);
+  try {
+    const r = await fetch("/api/manual", {
+      method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(answers),
+    });
+    const d = await readJson(r);
+    if (!d || !d.success) throw new Error(reason(d, r.status));
+    showResult(d, answers.age ?? null);
+  } catch (e) { fail(`Couldn't get a reading.\n\n${e.message}`); }
+  finally { busy(false); }
+};
+
+$("runR").onclick = async () => {
+  const f = fileInput.files[0];
+  if (!f) return fail("Choose a PDF first: drop one on the panel or click it to browse.");
+  const age = $("pdfAge").value.trim();
+  const body = new FormData();
+  body.append("file", f);
+  if (age) body.append("age", age);
+  busy(true, f.name);
+  try {
+    const r = await fetch("/api/pdf", { method: "POST", body });
+    const d = await readJson(r);
+    if (!d || !d.success) throw new Error(reason(d, r.status));
+    showResult(d, age ? Number(age) : null);
+  } catch (e) { fail(`Couldn't read the report.\n\n${e.message}`); }
+  finally { busy(false); }
+};
+
+/* ---------------- showing the reading */
+function clean(t) {
+  return String(t || "")
+    .replace(/^\s*(BIOLOGICAL_AGE|LIFE_EXPECTANCY|SCORES|HEALTH_SCORE)\s*:.*$/gim, "")
+    .replace(/^\s*#{1,6}\s*/gm, "")
+    .replace(/\*\*(.+?)\*\*/gs, "$1")
+    .replace(/\*(.+?)\*/gs, "$1")
+    .replace(/^\s*[-*+•]\s+/gm, "")
+    .replace(/`{1,3}([^`]*)`{1,3}/gs, "$1")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+}
+
+function fallbackReading(text) {
+  const num = label => {
+    const m = String(text || "").match(new RegExp(`^\\s*${label}\\s*:\\s*(-?\\d+(?:\\.\\d+)?)`, "im"));
+    return m ? parseFloat(m[1]) : null;
+  };
+  return {
+    biological_age: num("BIOLOGICAL_AGE"), life_expectancy: num("LIFE_EXPECTANCY"),
+    health_score: num("HEALTH_SCORE"), scores: {}, explanation: clean(text),
+  };
 }
 
 function setDial(bio, chrono) {
   const dial = $("dial");
+  dial.classList.remove("good", "mid", "bad");
+  if (bio == null) {
+    $("dialNum").textContent = "—";
+    $("arc").setAttribute("stroke-dasharray", `0 ${CIRC}`);
+    $("dialDelta").textContent = "no estimate returned";
+    $("dialDelta").style.color = "var(--ink-dim)";
+    return;
+  }
   $("dialNum").textContent = Math.round(bio);
   $("arc").setAttribute("stroke-dasharray", `${Math.min(bio / 100, 1) * CIRC} ${CIRC}`);
-  dial.classList.remove("good", "bad", "mid");
-
   let verdict;
-  if (chrono) {
+  if (chrono != null) {
     const d = bio - chrono;
     verdict = d <= 2 ? "good" : d <= 5 ? "mid" : "bad";
     $("dialDelta").textContent =
@@ -545,109 +644,77 @@ function setDial(bio, chrono) {
       : `${d.toFixed(1)} yrs older than ${chrono}`;
   } else {
     verdict = bio <= 45 ? "good" : bio <= 60 ? "mid" : "bad";
-    $("dialDelta").textContent = "no chronological age given";
+    $("dialDelta").textContent = "no actual age given";
   }
-
-  const color = verdict === "good" ? "var(--good)" : verdict === "mid" ? "var(--warn)" : "var(--bad)";
+  const color = { good: "var(--signal)", mid: "var(--warn)", bad: "var(--bad)" }[verdict];
   dial.classList.add(verdict);
   $("arc").setAttribute("stroke", color);
-  $("dialDelta").style.color = chrono ? color : "var(--ink-dim)";
+  $("dialDelta").style.color = chrono != null ? color : "var(--ink-dim)";
 }
 
-/* PDF run — reads and sends the age field */
-$("runPdf").onclick = async () => {
-  const f = fileInput.files[0];
-  if (!f) return fail("Pick a PDF first — drop one on the panel or click to browse.");
+function setStats(reading, chrono) {
+  $("statAge").textContent = chrono != null ? round1(chrono) : "—";
+  $("statLife").textContent = reading.life_expectancy != null ? Math.round(reading.life_expectancy) : "—";
+  const hs = reading.health_score;
+  $("statHealth").textContent = hs != null ? `${Math.round(hs)}/100` : "—";
+  const bar = $("healthBar");
+  bar.style.width = hs != null ? `${Math.max(0, Math.min(100, hs))}%` : "0";
+  bar.style.background = hs == null ? "var(--line)" : hs >= 70 ? "var(--signal)" : hs >= 40 ? "var(--warn)" : "var(--bad)";
+}
 
-  const chrono = $("pdfAge").value ? Number($("pdfAge").value) : null;
+function setBars(scores) {
+  const entries = AREAS.filter(([k]) => scores && scores[k] != null);
+  $("sectionsBlock").hidden = entries.length === 0;
+  if (!entries.length) return;
+  const max = Math.max(5, ...entries.map(([k]) => Math.abs(scores[k])));
+  $("bars").replaceChildren(...entries.map(([k, label]) => {
+    const v = Number(scores[k]);
+    const pct = `${(Math.min(Math.abs(v) / max, 1) * 50).toFixed(1)}%`;
+    const fill = h("i", { class: "fill " + (v < 0 ? "younger" : "older") });
+    fill.style.width = "0";
+    requestAnimationFrame(() => requestAnimationFrame(() => { fill.style.width = v === 0 ? "0" : pct; }));
+    return h("div", { class: "bar" },
+      h("span", {}, label),
+      h("div", { class: "track", "aria-hidden": "true" }, fill),
+      h("span", { class: "val", style: `color:${v < 0 ? "var(--signal)" : v > 0 ? "var(--bad)" : "var(--ink-dim)"}` },
+        v === 0 ? "0 yrs" : `${signed(v)} yrs`));
+  }));
+}
 
-  const body = new FormData();
-  body.append("file", f);
-  if (chrono) body.append("age", chrono);
+function showResult(d, chronoInput) {
+  const reading = d.reading || fallbackReading(d.result);
+  const chrono = d.chronological_age ?? chronoInput ?? null;
 
-  busy(true, `source: ${f.name}`);
-  try {
-    const r = await fetch(API_PDF, { method: "POST", body });
-    const d = await readJson(r);
-    if (!d || !d.success) throw new Error(reason(d, r.status));
-    render(d.result, chrono);
-  } catch (e) { fail(`Could not read the report:\n\n${e.message}`); }
-  finally { busy(false); }
-};
+  setDial(reading.biological_age, chrono);
+  setStats(reading, chrono);
+  setBars(reading.scores);
+  $("care").hidden = !d.care_flag;
 
-$("runManual").onclick = async () => {
-  const map = {
-    /* personal aspects */
-    age: $("age").value,
-    gender: $("gender").value,
-    race: $("race").value,
-    family_longevity: $("longevity").value,
-    education: $("education").value,
-    sleep_hours_avg: $("sleep").value,
+  const kids = [h("p", { class: "report" }, clean(reading.explanation || d.result) || "No explanation came back with this reading.")];
+  if (d.expert_cases_used) {
+    kids.push(h("p", { class: "learned" },
+      `Calibrated against ${d.expert_cases_used} similar case${d.expert_cases_used === 1 ? "" : "s"} corrected by medical experts.`));
+  }
+  $("out").replaceChildren(...kids);
+  $("out").scrollTop = 0;
 
-    /* heart disease risk */
-    total_cholesterol: $("chol").value,
-    blood_pressure: $("bp").value,
-    resting_heart_rate: $("rhr").value,
-    waist_to_hip_ratio: $("whr").value,
-    smoking: $("smoking").value,
-    family_heart_history: $("heartFamily").value,
-    stress: $("stress").value,
-    exercise_frequency: $("exercise").value,
-
-    /* medical aspects */
-    checkup_habits: $("checkups").value,
-    fasting_blood_sugar: $("sugar").value,
-    diabetes: $("diabetes").value,
-    heart: $("heartHealth").value,
-    lungs: $("lungs").value,
-    digestion: $("digestion").value,
-    medication: $("medication").value,
-    gynecological_screening: $("gynae").value,
-    contraceptive_pill: $("pill").value,
-
-    /* nutrition */
-    breakfast: $("breakfast").value,
-    meals: $("meals").value,
-    fruit_and_vegetables: $("produce").value,
-    fats: $("fats").value,
-    refined_foods: $("refined").value,
-    alcohol_consumption: $("alcohol").value,
-
-    /* psychological aspects */
-    happiness: $("happiness").value,
-    depression: $("depression").value,
-    anxiety: $("anxiety").value,
-    relaxation: $("relaxation").value,
-    relationship: $("relationship").value,
-    work_satisfaction: $("work").value,
-    social_life: $("social").value,
-
-    /* security */
-    driving_mileage: $("driving").value,
-    seat_belt_use: $("seatbelt").value,
-    risk_taking: $("risk").value
-  };
-  const measures = Object.fromEntries(Object.entries(map).filter(([, v]) => v !== ""));
-  if (!Object.keys(measures).length) return fail("Nothing to read yet — fill in at least one value.");
-  busy(true, `source: ${Object.keys(measures).length} values entered`);
-  try {
-    const r = await fetch(API_MANUAL, {
-      method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(measures)
+  if (window.Chronos && d.assessment_id) {
+    Chronos.mountCorrection($("correct"), {
+      assessmentId: d.assessment_id, reading, chronologicalAge: chrono,
     });
-    const d = await readJson(r);
-    if (!d || !d.success) throw new Error(reason(d, r.status));
-    render(d.result, measures.age ? Number(measures.age) : null);
-  } catch (e) { fail(`Could not read the values:\n\n${e.message}`); }
-  finally { busy(false); }
-};
+  } else {
+    $("correct").replaceChildren();
+  }
 
+  if (window.matchMedia("(max-width:1060px)").matches) {
+    $("resultCard").scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+}
+
+/* ---------------- chat */
 const log = $("log"), chatInput = $("chatInput");
 function bubble(who, text) {
-  const d = document.createElement("div");
-  d.className = "msg " + who;
-  d.textContent = text;
+  const d = h("div", { class: "msg " + who }, text);
   log.appendChild(d);
   log.scrollTop = log.scrollHeight;
   return d;
@@ -658,17 +725,16 @@ async function send() {
   chatInput.value = "";
   bubble("you", q);
   $("send").disabled = true;
-  $("chatMeter").innerHTML = spinner;
+  $("chatMeter").innerHTML = SPIN;
   try {
-    const r = await fetch(API_CHAT, {
-      method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message: q })
+    const r = await fetch("/api/chat", {
+      method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ message: q }),
     });
     const d = await readJson(r);
     if (!d || !d.success) throw new Error(reason(d, r.status));
     bubble("bot", clean(d.reply));
   } catch (e) {
-    bubble("bot", `Could not reach the assistant:\n\n${e.message}`).style.color = "var(--warn)";
+    bubble("bot", `Couldn't reach the assistant.\n\n${e.message}`).style.color = "var(--warn)";
   } finally {
     $("send").disabled = false;
     $("chatMeter").innerHTML = "";
